@@ -879,7 +879,7 @@ function renderBuAy(d){
   set('bay-badge',mos.length+' AY');
   const rows=mos.map((m,i)=>{
     const isAct=i===mos.length-1;
-    return `<tr${isAct?' class="active"':''}><td>${isAct?'⬦ ':''}${m.date}</td>
+    return `<tr${isAct?' class="active"':''}><td>${m.date}</td>
       <td>${fNum(m.total)}</td>
       <td class="${m.kar>=0?'up':'dn'}">${m.kar>=0?'+':''}${fNum(m.kar)}</td>
       <td class="${m.karPct>=0?'up':'dn'}">${fPct(m.karPct)}</td>
