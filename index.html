@@ -651,8 +651,8 @@ function paintAssets(){
   const cm=COL_MAP[_sortMode];
   let list=[..._assets].sort(_sortDesc?cm.desc:cm.asc);
 
-  // GREEN = #00FF9C, font-weight:600 (already in .asset-num-td)
-  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'#00FF9C':'var(--red)';
+  // GREEN = #5cf0c4 (matches Toplam Kâr KPI)
+  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'#5cf0c4':'var(--red)';
 
   $('asset-tbody').innerHTML=list.map((a,i)=>{
     const tc=TICKER_PAL[i%TICKER_PAL.length];
@@ -690,7 +690,7 @@ function paintAssets(){
 
 function openModal(ticker){
   const a=_assets.find(x=>x.ticker===ticker);if(!a)return;
-  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'#00FF9C':'var(--red)';
+  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'#5cf0c4':'var(--red)';
   set('m-ticker',a.ticker);
   set('m-cat',a.kat+(a.positions.length>1?' · '+a.positions.length+' pozisyon':''));
   const mv=$('m-val');if(mv)mv.textContent=fNum(a.val);
