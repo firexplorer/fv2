@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F.I.R.E. Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0d0c09;--s1:#161510;--s2:#1d1c17;--s3:#252319;--bdr:#2e2c24;
+  --gold:#c9a54c;--grn:#00e5a0;--red:#ff4d6d;--blu:#4fc3f7;
+  --t1:#ede9e0;--t2:#9a9488;--t3:#5c5850;--r:13px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  font-family:'Source Sans 3',sans-serif;
+  color:var(--t1);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 100% 50% at 50% -5%,rgba(201,165,76,.08) 0%,transparent 65%),
+    radial-gradient(ellipse 55% 35% at 92% 88%,rgba(79,195,247,.05) 0%,transparent 55%);
+}
+#loader{position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#loader.hidden{display:none;}
+.spin{width:34px;height:34px;border:3px solid var(--bdr);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#loader-msg{font-family:'JetBrains Mono';font-size:12px;color:var(--t2);}
+header{display:flex;align-items:center;justify-content:space-between;padding:15px 32px 13px;border-bottom:1px solid var(--bdr);background:rgba(13,12,9,.97);position:sticky;top:0;z-index:90;backdrop-filter:blur(20px);}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-badge{background:linear-gradient(135deg,#a07520,#c9a54c,#f0d070);color:#04090f;font-family:'Bebas Neue';font-size:21px;letter-spacing:3.5px;padding:7px 16px;border-radius:6px;}
+.logo-title{font-size:17.5px;font-weight:700;color:var(--t1);font-family:'Outfit';}
+.logo-sub{font-size:12px;color:var(--t3);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;}
+.hdr-right{display:flex;align-items:center;gap:18px;}
+.hdr-sep{width:1px;height:32px;background:var(--bdr);}
+.hdr-meta .lbl{font-size:11px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:right;font-family:'Outfit';}
+.hdr-meta .val{font-family:'JetBrains Mono';font-size:19px;color:var(--gold);}
+.hdr-date{background:var(--s2);border:1px solid var(--bdr);padding:7px 15px;border-radius:7px;font-family:'JetBrains Mono';font-size:14px;color:var(--t2);}
+.btn-refresh{background:var(--s2);border:1px solid var(--bdr);border-radius:7px;padding:8px 17px;color:var(--t2);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .22s;font-family:'Source Sans 3';font-weight:500;}
+.btn-refresh:hover{border-color:rgba(201,165,76,.5);color:var(--gold);background:rgba(201,165,76,.07);}
+.btn-refresh svg{width:14px;height:14px;transition:transform .4s ease;}
+.btn-refresh:hover svg{transform:rotate(180deg);}
+main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
+.sec-lbl{font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;margin-top:4px;display:flex;align-items:center;gap:10px;font-weight:700;font-family:'Outfit';}
+.sec-lbl::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.7;flex-shrink:0;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--bdr),transparent);}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:8px;}
+.kpi{background:linear-gradient(160deg,var(--s1) 0%,var(--s2) 100%);border:1px solid var(--bdr);border-radius:var(--r);padding:19px 21px 16px;position:relative;overflow:hidden;transition:border-color .25s,transform .2s;box-shadow:0 2px 16px rgba(0,0,0,.3);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 10%,var(--gold) 50%,transparent 90%);opacity:.25;}
+.kpi:hover{transform:translateY(-2px);}
+.kpi-lbl{font-size:11px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-bottom:9px;font-weight:700;font-family:'Outfit';}
+.kpi-main{font-family:'JetBrains Mono';font-size:22px;font-weight:500;line-height:1.1;margin-bottom:6px;}
+.kpi-sub{font-family:'JetBrains Mono';font-size:11px;color:var(--t2);margin-bottom:5px;}
+.kpi-delta{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;}
+.up{color:var(--grn);}.dn{color:var(--red);}.nu{color:var(--t3);}
+.kpi-0{border-color:rgba(201,165,76,.35);}.kpi-0::before{background:linear-gradient(90deg,transparent,#c9a54c,transparent);opacity:.9;}.kpi-0 .kpi-main{color:#f0d070;}
+.kpi-1{border-color:rgba(79,195,247,.3);}.kpi-1::before{background:linear-gradient(90deg,transparent,#4fc3f7,transparent);opacity:.8;}.kpi-1 .kpi-main{color:#7dd8f5;}
+.kpi-2{border-color:rgba(0,229,160,.25);}.kpi-2::before{background:linear-gradient(90deg,transparent,#00e5a0,transparent);opacity:.8;}.kpi-2 .kpi-main{color:#00e5a0;}
+.kpi-3{border-color:rgba(92,240,196,.2);}.kpi-3::before{background:linear-gradient(90deg,transparent,#5cf0c4,transparent);opacity:.65;}.kpi-3 .kpi-main{color:#5cf0c4;}
+.kpi-4{border-color:rgba(255,159,64,.25);}.kpi-4::before{background:linear-gradient(90deg,transparent,#ff9f40,transparent);opacity:.7;}.kpi-4 .kpi-main{color:#ffb870;}
+.kpi-5{border-color:rgba(167,139,250,.22);}.kpi-5::before{background:linear-gradient(90deg,transparent,#a78bfa,transparent);opacity:.65;}.kpi-5 .kpi-main{color:#c4b0ff;}
+.kpi-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:8px;}
+.kpi-sm{background:linear-gradient(160deg,var(--s1) 0%,var(--s2) 100%);border:1px solid var(--bdr);border-radius:var(--r);padding:19px 21px 16px;position:relative;overflow:hidden;transition:border-color .25s,transform .2s;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.kpi-sm::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,var(--gold) 50%,transparent 90%);opacity:.2;}
+.kpi-sm:hover{transform:translateY(-1px);}
+.kpi-sm-lbl{font-size:11px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-bottom:7px;font-weight:700;font-family:'Outfit';}
+.kpi-sm-main{font-family:'JetBrains Mono';font-size:22px;font-weight:500;line-height:1.1;margin-bottom:6px;}
+.kpi-sm-2{border-color:rgba(0,229,160,.2);}.kpi-sm-2 .kpi-sm-main{color:#00e5a0;}
+.kpi-sm-3{border-color:rgba(92,240,196,.18);}.kpi-sm-3 .kpi-sm-main{color:#5cf0c4;}
+.kpi-sm-dol{border-color:rgba(79,195,247,.25);}.kpi-sm-dol .kpi-sm-main{color:#7dd8f5;}
+.kpi-sm-dolpct{border-color:rgba(103,232,249,.22);}.kpi-sm-dolpct .kpi-sm-main{color:#67e8f9;}
+.kpi-sm-4{border-color:rgba(255,159,64,.2);}.kpi-sm-4 .kpi-sm-main{color:#ffb870;}
+.kpi-sm-5{border-color:rgba(167,139,250,.18);}.kpi-sm-5 .kpi-sm-main{color:#c4b0ff;}
+.row{display:grid;gap:14px;margin-bottom:8px;}
+.r3{grid-template-columns:1fr 1fr 1.25fr;align-items:stretch;}
+.r3-eq{grid-template-columns:1fr 1fr 1fr;align-items:stretch;}
+.r-full{grid-template-columns:1fr;}
+.card{background:linear-gradient(160deg,var(--s1) 0%,var(--s2) 100%);border:1px solid var(--bdr);border-radius:14px;padding:22px 24px;box-shadow:0 2px 16px rgba(0,0,0,.3);transition:border-color .22s;display:flex;flex-direction:column;}
+.card:hover{border-color:rgba(201,165,76,.2);}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0;}
+.ct{font-size:22px;font-weight:700;color:var(--t1);font-family:'Outfit';}
+.cb{font-size:11px;letter-spacing:1.5px;padding:4px 11px;background:var(--s3);border:1px solid rgba(201,165,76,.3);border-radius:20px;color:#9a9488;text-transform:uppercase;font-weight:700;}
+.chart-fill{flex:1;position:relative;min-height:200px;}
+.chart-fill canvas{position:absolute;inset:0;width:100%!important;height:100%!important;}
+.chart-fill-tall{flex:1;position:relative;min-height:260px;}
+.chart-fill-tall canvas{position:absolute;inset:0;width:100%!important;height:100%!important;}
+.fire-pct-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:10px;}
+.fire-big-pct{font-family:'Bebas Neue';font-size:72px;line-height:1;background:linear-gradient(160deg,#ffe97a 0%,#f0d070 30%,#c9a54c 75%,#9a6e18 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 26px rgba(201,165,76,.45));}
+.fire-pct-label{font-size:9.5px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;font-weight:700;padding-bottom:11px;}
+.fire-bar-track{height:18px;background:rgba(8,7,5,.95);border-radius:9px;border:1px solid rgba(46,44,36,.9);position:relative;overflow:hidden;}
+.fire-bar-fill{position:absolute;top:0;left:0;height:100%;border-radius:9px;background:linear-gradient(90deg,#5c3d0a,#c9a54c 52%,#f0d070 80%,#ffe97a);transition:width 2.2s cubic-bezier(.4,0,.2,1);}
+.fire-bar-glow{position:absolute;top:0;left:0;height:100%;border-radius:9px;background:linear-gradient(90deg,transparent 55%,rgba(255,250,190,.28));transition:width 2.2s cubic-bezier(.4,0,.2,1);}
+.fire-bar-ends{display:flex;justify-content:space-between;margin-top:6px;}
+.fire-bar-start,.fire-bar-end{font-family:'JetBrains Mono';font-size:9.5px;color:var(--t3);}
+.fr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(46,44,36,.9);font-size:12px;}
+.fr:last-child{border-bottom:none;}
+.fk{color:var(--t2);}
+.fv{font-family:'JetBrains Mono';font-size:12px;color:var(--gold);font-weight:500;}
+.fire-speed-box{margin-top:12px;padding:13px 18px;background:rgba(79,195,247,.06);border:1px solid rgba(79,195,247,.22);border-radius:11px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.fire-speed-lbl{font-size:10px;letter-spacing:1.5px;color:var(--t2);text-transform:uppercase;font-weight:700;font-family:'Outfit';}
+.fire-speed-sub{font-size:9px;color:var(--t3);margin-top:2px;font-family:'Outfit';}
+.fire-speed-val{font-family:'JetBrains Mono';font-size:18px;font-weight:500;color:#7dd8f5;}
+.fire-eta{margin-top:12px;padding:14px 20px;background:linear-gradient(135deg,rgba(201,165,76,.09),rgba(201,165,76,.03));border:1px solid rgba(201,165,76,.25);border-radius:11px;text-align:center;flex-shrink:0;}
+.fire-eta-label{font-size:9px;letter-spacing:2.5px;color:var(--t3);text-transform:uppercase;margin-bottom:5px;font-weight:700;font-family:'Outfit';}
+.fire-eta-val{font-family:'Bebas Neue';font-size:32px;letter-spacing:2.5px;background:linear-gradient(135deg,#f0d070,#c9a54c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.fire-eta-sub{font-size:10px;color:var(--t2);margin-top:4px;}
+.pie-leg{display:flex;flex-direction:column;margin-top:10px;border-top:1px solid rgba(46,44,36,.8);flex:1;}
+.pl-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(46,44,36,.6);flex:1;}
+.pl-item:last-child{border-bottom:none;}
+.pl-left{display:flex;align-items:center;gap:8px;min-width:0;}
+.pl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.pl-name{color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.pl-val{font-family:'JetBrains Mono';font-size:12px;color:var(--t1);}
+.pl-pct{font-family:'JetBrains Mono';font-size:12px;color:var(--t3);min-width:38px;text-align:right;}
+/* Clickable sortable column headers */
+.asset-tbl th.sortable{cursor:pointer;user-select:none;transition:color .18s;}
+.asset-tbl th.sortable:hover{color:var(--gold);}
+.asset-tbl th.sort-active{color:var(--gold);}
+.asset-tbl th.sort-active.sort-loss{color:var(--red);}
+.asset-tbl th.sort-active.sort-day{color:#7dd8f5;}
+.asset-tbl th.sort-active.sort-katki{color:var(--grn);}
+.sort-arrow{font-size:10px;margin-left:4px;opacity:.7;}
+/* Scrollable body, sticky header */
+.asset-table-outer{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.asset-table-wrap{flex:1;overflow-y:auto;max-height:520px;}
+.asset-table-wrap::-webkit-scrollbar{width:4px;}
+.asset-table-wrap::-webkit-scrollbar-track{background:transparent;}
+.asset-table-wrap::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px;}
+.asset-tbl{width:100%;border-collapse:collapse;}
+.asset-tbl thead{position:sticky;top:0;z-index:2;background:var(--s1);}
+.asset-tbl th{
+  font-size:12px;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--t1);padding:11px 13px 13px;font-weight:700;
+  border-bottom:2px solid rgba(201,165,76,.25);
+  font-family:'Outfit';text-align:right;white-space:nowrap;
+}
+.asset-tbl th:first-child{text-align:left;}
+.asset-tbl tr.asset-data-row{cursor:pointer;transition:background .15s;}
+.asset-tbl tr.asset-data-row:hover td{background:rgba(201,165,76,.06);}
+.asset-tbl td{padding:9px 12px;border-bottom:1px solid rgba(46,44,36,.55);vertical-align:middle;text-align:right;}
+.asset-tbl td:first-child{text-align:left;}
+.asset-tbl tbody tr:last-child td{border-bottom:none;}
+.asset-ticker-cell{display:flex;align-items:center;gap:11px;}
+.asset-badge{border-radius:7px;padding:4px 8px;font-family:'JetBrains Mono';font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;letter-spacing:.5px;}
+.asset-name-col .an{font-size:13px;color:var(--t1);font-weight:700;letter-spacing:.2px;}
+.asset-name-col .ac{font-size:11px;color:var(--t2);margin-top:2px;font-weight:500;}
+.asset-val-td{font-family:'JetBrains Mono';font-size:13px;color:var(--t1);font-weight:600;letter-spacing:.2px;}
+.asset-num-td{font-family:'JetBrains Mono';font-size:13px;font-weight:600;letter-spacing:.2px;}
+.tbl-wrap{flex:1;display:flex;flex-direction:column;}
+.bay-tbl{width:100%;border-collapse:collapse;}
+.bay-tbl th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-align:right;padding:0 12px 12px;font-weight:700;border-bottom:1px solid var(--bdr);font-family:'Outfit';}
+.bay-tbl th:first-child{text-align:left;}
+.bay-tbl td{font-family:'JetBrains Mono';font-size:12px;padding:12px;border-top:1px solid rgba(46,44,36,.6);text-align:right;color:var(--t2);}
+.bay-tbl td:first-child{text-align:left;color:var(--t1);font-family:'Source Sans 3';font-size:12px;font-weight:500;}
+.bay-tbl tr:hover td{background:rgba(46,44,36,.35);}
+.bay-tbl tr.active td{background:rgba(201,165,76,.06);}
+.bay-tbl tr.active td:first-child{color:var(--gold);}
+.bay-tbl tr.total td{color:var(--gold);font-weight:700;border-top:1px solid rgba(201,165,76,.2);}
+#asset-modal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;}
+#asset-modal.hidden{display:none;}
+.modal-backdrop{position:absolute;inset:0;background:rgba(4,3,2,.82);backdrop-filter:blur(6px);}
+.modal-box{position:relative;z-index:1;background:var(--s1);border:1px solid rgba(201,165,76,.25);border-radius:18px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(201,165,76,.08);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--bdr);}
+.modal-ticker{font-family:'Bebas Neue';font-size:28px;letter-spacing:3px;background:linear-gradient(135deg,#f0d070,#c9a54c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.modal-cat{font-size:10px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;font-weight:700;margin-top:3px;font-family:'Outfit';}
+.modal-close{background:var(--s3);border:1px solid var(--bdr);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:16px;transition:all .2s;flex-shrink:0;}
+.modal-close:hover{border-color:rgba(201,165,76,.4);color:var(--gold);}
+.modal-body{padding:20px 24px;}
+.modal-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.modal-kpi{background:var(--s2);border:1px solid var(--bdr);border-radius:10px;padding:13px 14px;}
+.modal-kpi .lbl{font-size:9px;letter-spacing:1.2px;color:var(--t3);text-transform:uppercase;font-weight:700;font-family:'Outfit';margin-bottom:6px;}
+.modal-kpi .val{font-family:'JetBrains Mono';font-size:15px;font-weight:500;}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr) 15%,var(--bdr) 85%,transparent);margin:24px 0;}
+#err-banner{display:none;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);border-radius:9px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--red);}
+#err-banner.show{display:block;}
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}.kpi-grid-6{grid-template-columns:repeat(3,1fr);}.r3,.r3-eq{grid-template-columns:1fr;}}
+@keyframes fadeup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.kpi{animation:fadeup .6s cubic-bezier(.22,.68,0,1.2) both;}
+.kpi:nth-child(1){animation-delay:.05s}.kpi:nth-child(2){animation-delay:.1s}.kpi:nth-child(3){animation-delay:.15s}
+.kpi:nth-child(4){animation-delay:.2s}.kpi:nth-child(5){animation-delay:.25s}.kpi:nth-child(6){animation-delay:.3s}
+.kpi-sm{animation:fadeup .6s cubic-bezier(.22,.68,0,1.2) both;}
+.kpi-sm:nth-child(1){animation-delay:.35s}.kpi-sm:nth-child(2){animation-delay:.4s}.kpi-sm:nth-child(3){animation-delay:.45s}
+.kpi-sm:nth-child(4){animation-delay:.5s}.kpi-sm:nth-child(5){animation-delay:.55s}.kpi-sm:nth-child(6){animation-delay:.6s}
+@keyframes cardfade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card{animation:cardfade .7s cubic-bezier(.22,.68,0,1.1) both;animation-delay:.18s;}
+@keyframes modalIn{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
+.modal-box{animation:modalIn .22s cubic-bezier(.22,.68,0,1.2);}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="spin"></div><div id="loader-msg">Yükleniyor...</div></div>
+
+<div id="asset-modal" class="hidden">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><div class="modal-ticker" id="m-ticker">—</div><div class="modal-cat" id="m-cat">—</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-kpi-row">
+        <div class="modal-kpi"><div class="lbl">Toplam Tutar</div><div class="val" id="m-val" style="color:#f0d070">—</div></div>
+        <div class="modal-kpi"><div class="lbl">Toplam Kâr</div><div class="val" id="m-gain">—</div></div>
+        <div class="modal-kpi"><div class="lbl">Getiri %</div><div class="val" id="m-pct">—</div></div>
+        <div class="modal-kpi"><div class="lbl">Günlük Getiri</div><div class="val" id="m-day">—</div></div>
+        <div class="modal-kpi"><div class="lbl">Portföy Payı</div><div class="val" id="m-share" style="color:#c4b0ff">—</div></div>
+        <div class="modal-kpi"><div class="lbl">Pozisyon Sayısı</div><div class="val" id="m-count" style="color:#7dd8f5">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+  <div class="logo">
+    <div class="logo-badge">F.I.R.E.</div>
+    <div><div class="logo-title">Portföy Dashboard</div><div class="logo-sub">Financial Independence · Retire Early</div></div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-meta"><div class="lbl">FIRE Hedefi</div><div class="val">$1.000.000</div></div>
+    <div class="hdr-sep"></div>
+    <div class="hdr-date" id="hdr-date">—</div>
+    <button class="btn-refresh" onclick="refresh()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Yenile
+    </button>
+  </div>
+</header>
+
+<main>
+  <div id="err-banner"></div>
+
+  <div class="sec-lbl">ÖZET GÖSTERGELER</div>
+  <div class="kpi-grid">
+    <div class="kpi kpi-0"><div class="kpi-lbl">Toplam Portföy</div><div class="kpi-main" id="k-total">—</div><div class="kpi-sub"></div><div class="kpi-delta" id="k-total-d">—</div></div>
+    <div class="kpi kpi-1"><div class="kpi-lbl">Dolar Değeri</div><div class="kpi-main" id="k-usd">—</div><div class="kpi-sub"></div><div class="kpi-delta" id="k-usd-d">—</div></div>
+    <div class="kpi kpi-2"><div class="kpi-lbl">Toplam Kâr / Ort.</div><div class="kpi-main" id="k-kar">—</div><div class="kpi-sub" id="k-kar-sub">—</div></div>
+    <div class="kpi kpi-3"><div class="kpi-lbl">Kâr Oranı / Ort.</div><div class="kpi-main" id="k-karpct">—</div><div class="kpi-sub" id="k-karpct-sub">—</div></div>
+    <div class="kpi kpi-4"><div class="kpi-lbl">Toplam Birikim / Ort.</div><div class="kpi-main" id="k-bir">—</div><div class="kpi-sub" id="k-bir-sub">—</div></div>
+    <div class="kpi kpi-5"><div class="kpi-lbl">Büyüme / FIRE %</div><div class="kpi-main" id="k-grow">—</div><div class="kpi-sub" id="k-grow-sub">—</div></div>
+  </div>
+
+  <div class="sec-lbl">AY</div>
+  <div class="kpi-grid-6">
+    <div class="kpi-sm kpi-sm-2"><div class="kpi-sm-lbl">Kâr</div><div class="kpi-sm-main" id="km-kar">—</div></div>
+    <div class="kpi-sm kpi-sm-3"><div class="kpi-sm-lbl">Kâr %</div><div class="kpi-sm-main" id="km-karpct">—</div></div>
+    <div class="kpi-sm kpi-sm-dol"><div class="kpi-sm-lbl">Dolar Karı</div><div class="kpi-sm-main" id="km-dol-kar">—</div></div>
+    <div class="kpi-sm kpi-sm-dolpct"><div class="kpi-sm-lbl">Dolar Karı %</div><div class="kpi-sm-main" id="km-dol-kar-pct">—</div></div>
+    <div class="kpi-sm kpi-sm-4"><div class="kpi-sm-lbl">Birikim</div><div class="kpi-sm-main" id="km-bir">—</div></div>
+    <div class="kpi-sm kpi-sm-5"><div class="kpi-sm-lbl">Büyüme</div><div class="kpi-sm-main" id="km-grow">—</div></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="row r3">
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="ch"><div class="ct">🔥 FIRE Hedefi</div><div class="cb">$1M HEDEF</div></div>
+      <div style="margin:0 0 12px;flex-shrink:0">
+        <div class="fire-pct-row"><div class="fire-big-pct" id="ring-pct">—</div><div class="fire-pct-label">tamamlandı</div></div>
+        <div class="fire-bar-track"><div class="fire-bar-fill" id="fire-bar-fill" style="width:0%"></div><div class="fire-bar-glow" id="fire-bar-glow" style="width:0%"></div></div>
+        <div class="fire-bar-ends"><span class="fire-bar-start">$0</span><span class="fire-bar-end">$1M</span></div>
+      </div>
+      <div class="fire-rows">
+        <div class="fr"><span class="fk">Mevcut Birikim (USD)</span><span class="fv" id="fr-cur">—</span></div>
+        <div class="fr"><span class="fk">Hedefe Kalan (USD)</span><span class="fv" id="fr-rem">—</span></div>
+      </div>
+      <div class="fire-speed-box">
+        <div>
+          <div class="fire-speed-lbl">FIRE İlerleme Hızı</div>
+          <div class="fire-speed-sub">Aylık Ort. Dolar Artış</div>
+        </div>
+        <div class="fire-speed-val" id="fire-speed-val">—</div>
+      </div>
+      <div class="fire-eta">
+        <div class="fire-eta-label">Tahmini Hedefe Ulaşma</div>
+        <div class="fire-eta-val" id="fire-eta-val">—</div>
+        <div class="fire-eta-sub" id="fire-eta-sub">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div class="ct">Portföy Dağılımı</div><div class="cb">KATEGORİ</div></div>
+      <div class="chart-fill"><canvas id="c-pie"></canvas></div>
+      <div class="pie-leg" id="pie-leg"></div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div class="ct">Aylık Performans</div><div class="cb" id="bay-badge">— AY</div></div>
+      <div class="tbl-wrap">
+        <table class="bay-tbl">
+          <thead><tr><th>Ay</th><th>Portföy</th><th>Kâr</th><th>Kâr%</th><th>Birikim</th></tr></thead>
+          <tbody id="bay-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+  <div class="sec-lbl">GRAFİKLER</div>
+  <div class="row r3-eq">
+    <div class="card"><div class="ch"><div class="ct">Portföy vs. Projeksiyon</div><div class="cb">2026</div></div><div class="chart-fill-tall"><canvas id="c-trend"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Benchmark Karşılaştırması</div><div class="cb">YTD</div></div><div class="chart-fill-tall"><canvas id="c-bench"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">Aylık Kâr &amp; Birikim</div><div class="cb" id="kar-badge">— AY</div></div><div class="chart-fill-tall"><canvas id="c-kar"></canvas></div></div>
+  </div>
+
+  <div class="section-divider"></div>
+  <div class="sec-lbl">VARLIKLAR</div>
+  <div class="row r-full">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Tüm Varlıklar</div>
+        <div class="cb" id="asset-count-badge">— VARLIK</div>
+      </div>
+      <div class="asset-table-outer">
+        <div class="asset-table-wrap">
+          <table class="asset-tbl">
+            <thead>
+              <tr>
+                <th class="sortable sort-active" id="th-size" onclick="sortAssets('size')">Varlık<span class="sort-arrow" id="arr-size">▼</span></th>
+                <th class="sortable" id="th-tutar" onclick="sortAssets('size')" style="text-align:right">Tutar<span class="sort-arrow" id="arr-tutar"></span></th>
+                <th class="sortable" id="th-profit" onclick="toggleProfit()" style="text-align:right">Getiri<span class="sort-arrow" id="arr-profit"></span></th>
+                <th class="sortable" id="th-pct" onclick="toggleProfit()" style="text-align:right">Getiri %<span class="sort-arrow" id="arr-pct"></span></th>
+                <th class="sortable" id="th-day" onclick="sortAssets('day')" style="text-align:right">G. Getiri<span class="sort-arrow" id="arr-day"></span></th>
+                <th class="sortable" id="th-katki" onclick="sortAssets('katki')" style="text-align:right">Kâra Katkı %<span class="sort-arrow" id="arr-katki"></span></th>
+                <th style="text-align:right">Pay %</th>
+              </tr>
+            </thead>
+            <tbody id="asset-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const SHEET_ID='1xH6o0FDViZpHzyFNg_rmBkRqIgIxQSElFlWukovN3BQ';
+const API_KEY='AIzaSyBdtdAjNKwB6ZJWWoX4VhSlCrukrqXSUTo';
+const FIRE_TARGET_USD=1_000_000;
+const charts={};
+const MONTHS=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const TICKER_PAL=[
+  {bg:'rgba(201,165,76,.14)',border:'rgba(201,165,76,.45)',text:'#f0d070'},
+  {bg:'rgba(79,195,247,.12)',border:'rgba(79,195,247,.4)',text:'#7dd8f5'},
+  {bg:'rgba(0,229,160,.12)',border:'rgba(0,229,160,.38)',text:'#00e5a0'},
+  {bg:'rgba(255,159,64,.12)',border:'rgba(255,159,64,.38)',text:'#ffb870'},
+  {bg:'rgba(167,139,250,.12)',border:'rgba(167,139,250,.38)',text:'#c4b0ff'},
+  {bg:'rgba(251,113,133,.12)',border:'rgba(251,113,133,.38)',text:'#fb7185'},
+  {bg:'rgba(103,232,249,.12)',border:'rgba(103,232,249,.38)',text:'#67e8f9'},
+  {bg:'rgba(52,211,153,.12)',border:'rgba(52,211,153,.38)',text:'#34d399'},
+  {bg:'rgba(248,196,113,.12)',border:'rgba(248,196,113,.38)',text:'#f8c471'},
+  {bg:'rgba(174,214,241,.12)',border:'rgba(174,214,241,.38)',text:'#aed6f1'},
+];
+
+function parseNum(v){
+  if(v===undefined||v===null||v==='') return null;
+  if(typeof v==='number') return v;
+  let s=String(v).trim();
+  const pm=s.match(/^(-?)\s*%\s*(.+)$/);
+  if(pm){const sg=pm[1]==='-'?-1:1;const n=parseTR(pm[2]);return n!==null?sg*n/100:null;}
+  const isPct=s.includes('%');
+  const isM=/\d\s*[Mm]$/.test(s.replace(/[₺$€£\s]/g,''));
+  s=s.replace(/[₺$€£\u20BA]/g,'').replace('%','').trim();
+  const mm=s.match(/^(-?[\d.,]+)\s*[Mm]$/);
+  if(mm||isM){const raw=(mm?mm[1]:s.replace(/[Mm]/g,'')).trim();const n=parseTR(raw);return n!==null?n*1_000_000:null;}
+  const n=parseTR(s);if(n===null)return null;
+  if(isPct)return Math.abs(n)>1?n/100:n;return n;
+}
+function parseTR(s){
+  s=String(s).trim();if(s===''||s==='-'||s==='+')return null;
+  const hd=s.includes('.'),hc=s.includes(',');let nm;
+  if(hd&&hc){const ld=s.lastIndexOf('.'),lc=s.lastIndexOf(',');nm=lc>ld?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'');}
+  else if(hc){nm=s.replace(',','.');}
+  else if(hd){const p=s.split('.');nm=(p.length>2||(p.length===2&&p[1].length===3))?s.replace(/\./g,''):s;}
+  else nm=s;
+  const n=parseFloat(nm);return isNaN(n)?null:n;
+}
+
+// No ₺ sign in any formatter
+const fNum=v=>Math.round(v).toLocaleString('tr-TR');
+const fUSD=v=>'$'+(v<0?'-':'')+Math.abs(Math.round(v)).toLocaleString('tr-TR');
+const fPct=v=>(v>=0?'+':'')+(v*100).toFixed(2)+'%';
+const fPctAbs=v=>(v*100).toFixed(2)+'%';
+const normStr=s=>String(s||'').trim().toUpperCase().replace(/İ/g,'I').replace(/Ğ/g,'G').replace(/Ş/g,'S').replace(/Ü/g,'U').replace(/Ö/g,'O').replace(/Ç/g,'C');
+const $=id=>document.getElementById(id);
+const set=(id,t)=>{const e=$(id);if(e)e.textContent=t;};
+function setDelta(id,val,txt){const e=$(id);if(!e)return;e.textContent=txt;e.className='kpi-delta '+(val>0?'up':val<0?'dn':'nu');}
+function showErr(msg){const b=$('err-banner');b.textContent='⚠ '+msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),12000);}
+
+window.addEventListener('DOMContentLoaded',()=>loadFromSheets());
+function refresh(){loadFromSheets();}
+
+async function loadFromSheets(){
+  $('loader').classList.remove('hidden');$('app').style.display='none';
+  set('loader-msg','Google Sheets\'ten veri çekiliyor...');
+  try{
+    const base=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values`;
+    const q=`key=${API_KEY}&valueRenderOption=FORMATTED_VALUE`;
+    const ranges=['KPI!A:B','PORTFOY!A:B','VARLIK!A:L','GERPLAN!A:N','BENCH!A:B','KAR!A:Z','TABLE!C6'];
+    const jsons=await Promise.all(ranges.map(r=>fetch(`${base}/${encodeURIComponent(r)}?${q}`).then(x=>x.json())));
+    for(const j of jsons)if(j.error)throw new Error(j.error.message);
+    const vals=jsons.map(j=>j.values||[]);
+    const tableC6=vals[6]&&vals[6][0]?parseNum(vals[6][0][0]):null;
+    const data=parseAll(vals.slice(0,6),tableC6);
+    $('loader').classList.add('hidden');renderDashboard(data);
+  }catch(err){
+    $('loader').classList.add('hidden');
+    showErr('Sheets hatası: '+err.message+' — Demo veri yüklendi.');
+    console.error(err);renderDashboard(getDemoData());
+  }
+}
+
+function parseAll([kpiRows,portfoyRows,varlikRows,gerplanRows,benchRows,karRows],tableC6){
+  const kv=i=>{const r=kpiRows[i];if(!r)return 0;const v=parseNum(r[1]);return v!==null?v:0;};
+  const cur=kv(0),curChangeTL=kv(1),prev=cur-curChangeTL;
+  const totalUSD=kv(3),usdChange=kv(4),prevUSD=totalUSD-usdChange;
+  const totalKar=kv(6),avgKar=kv(7);
+  const totalKarPct=kv(8),avgKarPct=kv(9);
+  const totalBir=kv(10),avgBir=kv(11);
+  const growTotal=kv(12);
+  const thisKar=kv(14),thisKarPct=kv(15),thisBir=kv(16),growThis=kv(17);
+  const dolKar=kv(18),dolKarPct=kv(19);
+  const fireSpeed=tableC6!==null?tableC6:null;
+
+  const categories=(portfoyRows||[]).slice(1)
+    .map(r=>({name:String(r[0]||'').trim(),val:parseNum(r[1])}))
+    .filter(x=>x.name&&x.val!==null&&x.val>0&&!['VARLIK','TOPLAM','AD'].includes(normStr(x.name)))
+    .sort((a,b)=>b.val-a.val);
+
+  const totalPortfoy=categories.reduce((s,c)=>s+c.val,0)||cur||1;
+
+  const rawAssets=(varlikRows||[]).slice(1)
+    .filter(r=>r[0]&&String(r[0]).trim()!=='VARLIK')
+    .map(r=>({
+      ticker:String(r[0]||'').trim(),kat:String(r[1]||'').trim(),
+      adet:parseNum(r[2]),alisFiyati:parseNum(r[3]),alisTL:parseNum(r[4]),
+      tarih:String(r[5]||'').trim(),guncelFiyat:parseNum(r[6]),
+      gunlukGetiri:parseNum(r[7]),val:parseNum(r[8]),
+      gun:parseNum(r[9]),gainTL:parseNum(r[10]),pct:parseNum(r[11])
+    }))
+    .filter(x=>x.ticker&&x.val!==null&&x.val>0&&!['TOPLAM','BES','YH','BHS','VARLIK'].includes(normStr(x.ticker)));
+
+  const groupMap={};
+  for(const a of rawAssets){
+    if(!groupMap[a.ticker])groupMap[a.ticker]={ticker:a.ticker,kat:a.kat,val:0,gainTL:0,gunlukGetiriTL:0,positions:[]};
+    const g=groupMap[a.ticker];
+    g.val+=(a.val||0);g.gainTL+=(a.gainTL||0);
+    if(a.gunlukGetiri!==null&&a.val)g.gunlukGetiriTL+=a.gunlukGetiri*(a.val||0);
+    g.positions.push(a);
+  }
+
+  const assets=Object.values(groupMap).map(g=>{
+    const gunlukGetiri=g.val>0?g.gunlukGetiriTL/g.val:null;
+    const pct=g.val>0&&g.gainTL!==0?g.positions.reduce((s,p)=>s+(p.pct!==null?p.pct*(p.val||0):0),0)/g.val:null;
+    return {...g,gunlukGetiri,pct,portfoyPay:g.val/totalPortfoy};
+  }).sort((a,b)=>b.val-a.val);
+
+  const totalGainTL=assets.reduce((s,a)=>s+(a.gainTL||0),0)||totalKar||1;
+
+  const gerHeader=(gerplanRows||[])[0]||[];
+  const findGerRow=(...keys)=>(gerplanRows||[]).find(r=>r&&r[0]&&keys.some(k=>normStr(r[0]).includes(normStr(k))))||[];
+  const projRow=findGerRow('PROJEKSIYON','PLAN','PROJ');
+  const gercRow=findGerRow('GERCEKLESEN','GERCEKLESME','GERCEK','ACTUAL');
+  const base=parseNum(projRow[1])||parseNum(gercRow[1])||0;
+  const planRowsParsed=[];
+  for(let i=2;i<projRow.length;i++){const v=parseNum(projRow[i]);if(v!==null&&v>0)planRowsParsed.push({no:i-1,total:v});}
+  const gercMonths=[];
+  for(let i=2;i<gercRow.length;i++){const v=parseNum(gercRow[i]);if(v===null||v===0)continue;gercMonths.push({label:String(gerHeader[i]||'').trim()||('Ay '+(i-1)),total:v});}
+
+  const benchmarks=(benchRows||[]).slice(1)
+    .map(r=>({name:String(r[0]||'').trim(),val:parseNum(r[1])}))
+    .filter(x=>x.name&&x.val!==null&&!['VARLIK','GETIRI','GETİRİ','AD'].includes(normStr(x.name)));
+
+  const karHeader=(karRows||[])[0]||[];
+  const findKarRow=(...keys)=>{
+    for(const r of (karRows||[])){const L=normStr(r[0]||'');if(keys.some(k=>L===normStr(k)))return r;}
+    for(const r of (karRows||[])){const L=normStr(r[0]||'');if(keys.some(k=>L.includes(normStr(k))))return r;}
+    return [];
+  };
+  const rBirikim=findKarRow('BIRIKIM');
+  const rKar=findKarRow('KAR');
+  const ayCount=karHeader.slice(1).filter(v=>v!==undefined&&v!=='').length;
+
+  // Only months with actual data
+  const karMonths=[];
+  for(let i=0;i<ayCount;i++){
+    const col=i+1;
+    const kar=parseNum(rKar[col])||0;
+    const birikim=parseNum(rBirikim[col])||0;
+    if(kar!==0||birikim!==0){
+      karMonths.push({date:String(karHeader[col]||'').trim()||('Ay '+(i+1)),kar,birikim});
+    }
+  }
+
+  const months=gercMonths.map((g,i)=>{
+    // match karMonths by index
+    const km=karMonths[i]||{};
+    const prevTotal=i===0?base:(gercMonths[i-1]?.total||base);
+    const kar=km.kar||0;
+    return {date:g.label,total:g.total,kar,karPct:prevTotal>0?kar/prevTotal:0,birAy:km.birikim||0};
+  });
+
+  return {cur,prev,base,totalUSD,prevUSD,totalKar,avgKar,thisKar,totalKarPct,avgKarPct,thisKarPct,totalBir,avgBir,thisBir,growTotal,growThis,dolKar,dolKarPct,fireSpeed,categories,assets,totalGainTL,benchmarks,months,planRows:planRowsParsed,karMonths};
+}
+
+function getDemoData(){return{
+  cur:15809250,prev:15864337,base:13460000,totalUSD:358710,prevUSD:361210,
+  totalKar:1978765,avgKar:659588,thisKar:-194137,totalKarPct:0.1471,avgKarPct:0.0490,thisKarPct:-0.0122,
+  totalBir:372228,avgBir:124076,thisBir:139050,growTotal:0.1747,growThis:-0.0035,
+  dolKar:-2500,dolKarPct:-0.0069,fireSpeed:1850,
+  totalGainTL:1978765,
+  categories:[{name:'PARA PİYASASI',val:8552624},{name:'ALTIN',val:2520717},{name:'YERLİ HİSSE',val:1660652},{name:'DOLAR',val:1659847},{name:'EURO',val:565376},{name:'DEVLET KATKISI',val:832910},{name:'DEĞİŞKEN',val:17124}],
+  months:[{date:'Oca/26',total:15570000,kar:1963205,karPct:0.1459,birAy:148668},{date:'Şub/26',total:15864337,kar:209697,karPct:0.0135,birAy:84510},{date:'Mar/26',total:15809250,kar:-194137,karPct:-0.0122,birAy:139050}],
+  karMonths:[{date:'Oca/26',kar:1963205,birikim:148668},{date:'Şub/26',kar:209697,birikim:84510},{date:'Mar/26',kar:-194137,birikim:139050}],
+  assets:[
+    {ticker:'MIDAS',kat:'Para Piy.',val:3182485,gainTL:0,pct:null,gunlukGetiri:0,portfoyPay:0.201,positions:[{}]},
+    {ticker:'GEL',kat:'Para Piy.',val:2067411,gainTL:55937,pct:0.0278,gunlukGetiri:0.0004,portfoyPay:0.131,positions:[{}]},
+    {ticker:'VGA',kat:'Altın',val:2520717,gainTL:7447,pct:0.003,gunlukGetiri:-0.0028,portfoyPay:0.159,positions:[{}]},
+    {ticker:'TI1',kat:'Para Piy.',val:1822749,gainTL:195376,pct:0.1201,gunlukGetiri:0.0008,portfoyPay:0.115,positions:[{}]},
+    {ticker:'BYS',kat:'Dolar',val:1659847,gainTL:135392,pct:0.0888,gunlukGetiri:0.0036,portfoyPay:0.105,positions:[{}]},
+    {ticker:'TZL',kat:'Para Piy.',val:1455243,gainTL:50676,pct:0.0361,gunlukGetiri:0.0009,portfoyPay:0.092,positions:[{}]},
+    {ticker:'PHE',kat:'Yerli Hisse',val:672876,gainTL:172877,pct:0.3459,gunlukGetiri:0.0201,portfoyPay:0.043,positions:[{}]},
+    {ticker:'VEI',kat:'Devlet Katkısı',val:497197,gainTL:null,pct:null,gunlukGetiri:0.0041,portfoyPay:0.031,positions:[{},{}]},
+    {ticker:'VGH',kat:'Değişken',val:17124,gainTL:4705,pct:0.3788,gunlukGetiri:0.0119,portfoyPay:0.001,positions:[{},{}]},
+    {ticker:'RHI',kat:'Yerli Hisse',val:495787,gainTL:-4212,pct:-0.0084,gunlukGetiri:0.0098,portfoyPay:0.031,positions:[{}]},
+    {ticker:'SG',kat:'Euro',val:565376,gainTL:4426,pct:0.0079,gunlukGetiri:null,portfoyPay:0.036,positions:[{}]},
+  ],
+  planRows:[{no:1,total:14080000},{no:2,total:14720000},{no:3,total:15380000},{no:4,total:16070000},{no:5,total:16780000},{no:6,total:17520000},{no:7,total:18280000},{no:8,total:19070000},{no:9,total:19880000},{no:10,total:20730000},{no:11,total:21600000},{no:12,total:22500000}],
+};}
+
+function renderDashboard(d){
+  $('app').style.display='';
+  const now=new Date();
+  set('hdr-date',MONTHS[now.getMonth()].toUpperCase()+' '+now.getFullYear());
+  renderKPIs(d);renderFire(d);renderPie(d);
+  renderBuAy(d);renderTrend(d);renderBench(d);renderKarBar(d);
+  renderAssets(d);
+}
+
+function renderKPIs(d){
+  const td=d.cur-d.prev,ud=d.totalUSD-(d.prevUSD||0);
+  set('k-total',fNum(d.cur));
+  setDelta('k-total-d',td,(td>=0?'+':'')+fNum(td)+' ('+fPct(d.prev?td/d.prev:0)+')');
+  set('k-usd',fUSD(d.totalUSD));
+  setDelta('k-usd-d',ud,(ud>=0?'+':'')+fUSD(Math.abs(ud))+(d.prevUSD?' ('+fPct(ud/d.prevUSD)+')':''));
+  set('k-kar',fNum(d.totalKar));set('k-kar-sub','Ort. '+fNum(d.avgKar));
+  set('k-karpct',fPctAbs(d.totalKarPct));set('k-karpct-sub','Ort. '+fPctAbs(d.avgKarPct));
+  set('k-bir',fNum(d.totalBir));set('k-bir-sub','Ort. '+fNum(d.avgBir));
+  set('k-grow',fPct(d.growTotal));
+  set('k-grow-sub','%'+(d.totalUSD/FIRE_TARGET_USD*100).toFixed(2)+' tamamlandı');
+
+  const col=(id,v)=>{const e=$(id);if(e)e.style.color=v>=0?'var(--grn)':'var(--red)';};
+  set('km-kar',fNum(d.thisKar));col('km-kar',d.thisKar);
+  set('km-karpct',fPct(d.thisKarPct));col('km-karpct',d.thisKarPct);
+
+  const dkEl=$('km-dol-kar');
+  if(dkEl){dkEl.textContent=(d.dolKar!==null&&d.dolKar!==0)?fUSD(d.dolKar):'—';dkEl.style.color=d.dolKar>0?'var(--grn)':d.dolKar<0?'var(--red)':'#7dd8f5';}
+  const dkpEl=$('km-dol-kar-pct');
+  if(dkpEl){dkpEl.textContent=(d.dolKarPct!==null&&d.dolKarPct!==0)?fPct(d.dolKarPct):'—';dkpEl.style.color=d.dolKarPct>0?'var(--grn)':d.dolKarPct<0?'var(--red)':'#67e8f9';}
+
+  set('km-bir',fNum(d.thisBir));
+  set('km-grow',fPct(d.growThis));col('km-grow',d.growThis);
+}
+
+function renderFire(d){
+  const pct=d.totalUSD/FIRE_TARGET_USD*100;
+  set('ring-pct','%'+pct.toFixed(2));
+  set('fr-cur',fUSD(d.totalUSD));
+  set('fr-rem',fUSD(Math.max(0,FIRE_TARGET_USD-d.totalUSD)));
+  setTimeout(()=>{
+    $('fire-bar-fill').style.width=Math.min(pct,100).toFixed(2)+'%';
+    $('fire-bar-glow').style.width=Math.min(pct,100).toFixed(2)+'%';
+  },80);
+
+  // FIRE speed from TABLE!C6
+  const speedEl=$('fire-speed-val');
+  if(speedEl){
+    const spd=d.fireSpeed;
+    if(spd!==null&&spd!==0){speedEl.textContent=fUSD(spd)+'/ay';}
+    else{const fb=d.prevUSD>0?d.totalUSD-d.prevUSD:0;speedEl.textContent=fb!==0?fUSD(fb)+'/ay':'—';}
+  }
+
+  // ETA calculation
+  const monthlyUSD=d.fireSpeed>0?d.fireSpeed:(d.prevUSD>0&&d.totalUSD>d.prevUSD?d.totalUSD-d.prevUSD:d.totalUSD*0.01);
+  const rate=monthlyUSD/d.totalUSD;
+  if(rate>0){
+    let p=d.totalUSD,mo=0;
+    while(p<FIRE_TARGET_USD&&mo<600){p=p*(1+rate);mo++;}
+    const y=Math.floor(mo/12),m=mo%12;
+    const eta=new Date();eta.setMonth(eta.getMonth()+mo);
+    set('fire-eta-val',y>0?`${y} YIL ${m} AY`:`${m} AY`);
+    set('fire-eta-sub',`~${eta.getFullYear()} · ${fUSD(Math.max(0,Math.round(FIRE_TARGET_USD-d.totalUSD)))} kaldı`);
+  } else {set('fire-eta-val','—');set('fire-eta-sub','Yeterli veri yok');}
+}
+
+function renderPie(d){
+  const pal=['#c9a54c','#4fc3f7','#00e5a0','#ff9f40','#ff6384','#9b59b6','#3498db','#e74c3c','#1abc9c','#f39c12'];
+  const cats=(d.categories||[]).filter(c=>c.val>0);
+  const tot=cats.reduce((s,c)=>s+c.val,0)||1;
+  if(charts.pie)charts.pie.destroy();
+  charts.pie=new Chart($('c-pie').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:cats.map(c=>c.name),datasets:[{data:cats.map(c=>c.val),backgroundColor:cats.map((_,i)=>pal[i%pal.length]),borderColor:'#1d1c17',borderWidth:2,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#191812',borderColor:'#2a2820',borderWidth:1,callbacks:{label:c=>` ${fNum(c.parsed)} — %${(c.parsed/tot*100).toFixed(1)}`}}},animation:{duration:1300}}
+  });
+  $('pie-leg').innerHTML=cats.map((c,i)=>`
+    <div class="pl-item">
+      <div class="pl-left"><div class="pl-dot" style="background:${pal[i%pal.length]}"></div><span class="pl-name">${c.name}</span></div>
+      <div class="pl-right"><span class="pl-val">${fNum(c.val)}</span><span class="pl-pct">%${(c.val/tot*100).toFixed(1)}</span></div>
+    </div>`).join('');
+}
+
+let _assets=[],_totalGainTL=1;
+
+function renderAssets(d){
+  _assets=d.assets||[];
+  _totalGainTL=d.totalGainTL||d.totalKar||1;
+  set('asset-count-badge',_assets.length+' VARLIK');
+  // Set initial arrow
+  const ar=$('arr-size');if(ar)ar.textContent='▼';
+  paintAssets('size');
+}
+
+let _sortMode='size';
+
+function sortAssets(mode){
+  _sortMode=mode;
+  // Clear all header states
+  const headers={size:'th-size',profit:'th-profit',loss:'th-profit',day:'th-day',katki:'th-katki'};
+  const arrows={size:'arr-size',profit:'arr-profit',loss:'arr-profit',day:'arr-day',katki:'arr-katki'};
+  // Reset all sortable headers
+  document.querySelectorAll('.asset-tbl th.sortable').forEach(th=>{
+    th.classList.remove('sort-active','sort-loss','sort-day','sort-katki');
+  });
+  document.querySelectorAll('.sort-arrow').forEach(a=>a.textContent='');
+  // Activate clicked header
+  const activeId=headers[mode];
+  const arrowId=arrows[mode];
+  const th=$(activeId);const ar=$(arrowId);
+  if(th){
+    th.classList.add('sort-active');
+    if(mode==='loss'){th.classList.add('sort-loss');}
+    else if(mode==='day'){th.classList.add('sort-day');}
+    else if(mode==='katki'){th.classList.add('sort-katki');}
+  }
+  if(ar){ar.textContent=mode==='loss'?'▲':'▼';}
+  paintAssets(mode);
+}
+
+let _profitDesc=true;
+function toggleProfit(){
+  _profitDesc=!_profitDesc;
+  sortAssets(_profitDesc?'profit':'loss');
+}
+
+function paintAssets(mode){
+  let list=[..._assets];
+  if(mode==='size')list.sort((a,b)=>b.val-a.val);
+  else if(mode==='profit')list.sort((a,b)=>(b.gainTL||0)-(a.gainTL||0));
+  else if(mode==='loss')list.sort((a,b)=>(a.gainTL||0)-(b.gainTL||0));
+  else if(mode==='day')list.sort((a,b)=>(b.gunlukGetiri||0)-(a.gunlukGetiri||0));
+  else if(mode==='katki')list.sort((a,b)=>(b.gainTL||0)/_totalGainTL-(a.gainTL||0)/_totalGainTL);
+
+  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'var(--grn)':'var(--red)';
+
+  $('asset-tbody').innerHTML=list.map((a,i)=>{
+    const tc=TICKER_PAL[i%TICKER_PAL.length];
+    const gainStr=a.gainTL!==null&&a.gainTL!==undefined
+      ?`<span class="asset-num-td" style="color:${cp(a.gainTL)}">${a.gainTL>=0?'+':''}${fNum(a.gainTL)}</span>`
+      :`<span style="color:var(--t3)">—</span>`;
+    const pctStr=a.pct!==null&&a.pct!==undefined
+      ?`<span class="asset-num-td" style="color:${cp(a.pct)}">${fPct(a.pct)}</span>`
+      :`<span style="color:var(--t3)">—</span>`;
+    const dayStr=a.gunlukGetiri!==null&&a.gunlukGetiri!==undefined
+      ?`<span class="asset-num-td" style="color:${cp(a.gunlukGetiri)}">${fPct(a.gunlukGetiri)}</span>`
+      :`<span style="color:var(--t3)">—</span>`;
+    const payStr=`<span class="asset-num-td" style="color:var(--t2)">${(a.portfoyPay*100).toFixed(1)}%</span>`;
+
+    // Katkı %: (varlık gainTL / toplam gainTL) * 100
+    let katkiStr=`<span style="color:var(--t3)">—</span>`;
+    if(a.gainTL!==null&&a.gainTL!==undefined&&_totalGainTL!==0){
+      const kv=a.gainTL/_totalGainTL*100;
+      katkiStr=`<span class="asset-num-td" style="color:${cp(kv)}">${kv>=0?'+':''}${kv.toFixed(1)}%</span>`;
+    }
+
+    const posCount=a.positions.length;
+    const badge=`<div class="asset-badge" style="background:${tc.bg};border:1px solid ${tc.border};color:${tc.text}">${String(a.ticker).slice(0,6)}</div>`;
+    const posBadge=posCount>1?`<span style="font-size:10px;background:rgba(79,195,247,.12);border:1px solid rgba(79,195,247,.3);color:#7dd8f5;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono';margin-left:5px;font-weight:700">${posCount}x</span>`:'';
+    return `<tr class="asset-data-row" onclick="openModal('${a.ticker.replace(/'/g,"\\'")}')">
+      <td><div class="asset-ticker-cell">${badge}<div class="asset-name-col"><div class="an">${a.ticker}${posBadge}</div><div class="ac">${a.kat}</div></div></div></td>
+      <td class="asset-val-td">${fNum(a.val)}</td>
+      <td>${gainStr}</td>
+      <td>${pctStr}</td>
+      <td>${dayStr}</td>
+      <td>${katkiStr}</td>
+      <td>${payStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openModal(ticker){
+  const a=_assets.find(x=>x.ticker===ticker);if(!a)return;
+  const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'var(--grn)':'var(--red)';
+  set('m-ticker',a.ticker);
+  set('m-cat',a.kat+(a.positions.length>1?' · '+a.positions.length+' pozisyon':''));
+  const mv=$('m-val');if(mv)mv.textContent=fNum(a.val);
+  const mg=$('m-gain');
+  if(mg){mg.textContent=a.gainTL!==null&&a.gainTL!==undefined?(a.gainTL>=0?'+':'')+fNum(a.gainTL):'—';mg.style.color=a.gainTL!==null?cp(a.gainTL):'var(--t3)';}
+  const mp=$('m-pct');
+  if(mp){mp.textContent=a.pct!==null&&a.pct!==undefined?fPct(a.pct):'—';mp.style.color=a.pct!==null?cp(a.pct):'var(--t3)';}
+  const md=$('m-day');
+  if(md){md.textContent=a.gunlukGetiri!==null&&a.gunlukGetiri!==undefined?fPct(a.gunlukGetiri):'—';md.style.color=a.gunlukGetiri!==null?cp(a.gunlukGetiri):'var(--t3)';}
+  set('m-share',(a.portfoyPay*100).toFixed(2)+'%');
+  set('m-count',a.positions.length+' pozisyon');
+  $('asset-modal').classList.remove('hidden');document.body.style.overflow='hidden';
+}
+function closeModal(){$('asset-modal').classList.add('hidden');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function renderBuAy(d){
+  const mos=d.months||[];
+  set('bay-badge',mos.length+' AY');
+  const rows=mos.map((m,i)=>{
+    const isAct=i===mos.length-1;
+    return `<tr${isAct?' class="active"':''}><td>${isAct?'⬦ ':''}${m.date}</td>
+      <td>${fNum(m.total)}</td>
+      <td class="${m.kar>=0?'up':'dn'}">${m.kar>=0?'+':''}${fNum(m.kar)}</td>
+      <td class="${m.karPct>=0?'up':'dn'}">${fPct(m.karPct)}</td>
+      <td>${fNum(m.birAy)}</td></tr>`;
+  });
+  const tk=mos.reduce((s,m)=>s+m.kar,0),tb=mos.reduce((s,m)=>s+m.birAy,0);
+  rows.push(`<tr class="total"><td>TOPLAM</td><td>—</td><td class="${tk>=0?'up':'dn'}">${tk>=0?'+':''}${fNum(tk)}</td><td class="${tk>=0?'up':'dn'}">${fPct(d.totalKarPct)}</td><td>${fNum(tb)}</td></tr>`);
+  $('bay-body').innerHTML=rows.join('');
+}
+
+function renderTrend(d){
+  if(charts.trend)charts.trend.destroy();
+  const ctx=$('c-trend').getContext('2d');
+  const mos=d.months||[];
+  const plL=d.planRows.slice(0,12).map((_,i)=>MONTHS[i%12]);
+  const moL=mos.map(m=>m.date);
+  const allL=['Başlangıç',...(plL.length>=moL.length?plL:moL)];
+  const actP=[d.base,...mos.map(m=>m.total)];
+  const plnP=[d.base,...d.planRows.slice(0,12).map(p=>p.total)];
+  while(actP.length<allL.length)actP.push(null);
+  const ga=ctx.createLinearGradient(0,0,0,215);ga.addColorStop(0,'rgba(201,165,76,.28)');ga.addColorStop(1,'rgba(201,165,76,0)');
+  const gp=ctx.createLinearGradient(0,0,0,215);gp.addColorStop(0,'rgba(79,195,247,.1)');gp.addColorStop(1,'rgba(79,195,247,0)');
+  charts.trend=new Chart(ctx,{type:'line',data:{labels:allL,datasets:[
+    {label:'Gerçekleşen',data:actP,borderColor:'#c9a54c',backgroundColor:ga,pointBackgroundColor:'#c9a54c',pointRadius:actP.map(v=>v!==null?4:0),pointHoverRadius:7,tension:0.4,fill:true,borderWidth:2.5,spanGaps:false},
+    {label:'Planlanan',data:plnP,borderColor:'#4fc3f7',backgroundColor:gp,pointBackgroundColor:'#4fc3f7',pointRadius:3,pointHoverRadius:5,tension:0.4,fill:true,borderWidth:1.5,borderDash:[5,3]},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:true,position:'top',align:'end',labels:{boxWidth:12,boxHeight:2,padding:12,color:'#c8c2b4',font:{size:11,family:'JetBrains Mono'}}},tooltip:{backgroundColor:'#191812',borderColor:'#2a2820',borderWidth:1,callbacks:{label:c=>` ${c.dataset.label}: ${fNum(c.parsed.y)}`}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#8a8478',maxRotation:0,font:{size:11}}},
+      y:{grid:{color:'rgba(60,57,48,.7)'},ticks:{color:'#8a8478',callback:v=>(v/1e6).toFixed(1)+'M',font:{size:11}}}
+    },animation:{duration:1500}}
+  });
+}
+
+function renderBench(d){
+  if(charts.bench)charts.bench.destroy();
+  const b=d.benchmarks||[];
+  const vals=b.map(x=>parseFloat((x.val*100).toFixed(2)));
+  const CM={'PORTFÖY':'#00e5a0','PORTFOY':'#00e5a0','ALTIN':'#c9a54c','BITCOIN':'#f7931a','BORSA':'#4fc3f7','NDX 100':'#a78bfa','NDX':'#a78bfa','PPN':'#fb7185','DOLAR':'#67e8f9','ENFLASYON':'#fbbf24'};
+  const fb=['#00e5a0','#c9a54c','#4fc3f7','#f7931a','#a78bfa','#fb7185','#67e8f9','#fbbf24'];
+  const cols=b.map((x,i)=>CM[x.name.toUpperCase()]||fb[i%fb.length]);
+  charts.bench=new Chart($('c-bench').getContext('2d'),{type:'bar',
+    data:{labels:b.map(x=>x.name),datasets:[{data:vals,backgroundColor:cols.map(c=>c+'bb'),borderColor:cols,borderWidth:1,borderRadius:4,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#191812',borderColor:'#2a2820',borderWidth:1,callbacks:{label:c=>` ${c.parsed.x>0?'+':''}${c.parsed.x.toFixed(2)}%`}}},
+      scales:{x:{grid:{color:'rgba(60,57,48,.7)'},ticks:{color:'#8a8478',callback:v=>v+'%',font:{size:11}}},y:{grid:{display:false},ticks:{color:'#c8c2b4',font:{size:12,family:'JetBrains Mono'}}}},animation:{duration:1300}}
+  });
+}
+
+function renderKarBar(d){
+  if(charts.kar)charts.kar.destroy();
+  // Only months with data (already filtered)
+  const mos=(d.karMonths&&d.karMonths.length)?d.karMonths
+    :(d.months||[]).map(m=>({date:m.date,kar:m.kar,birikim:m.birAy})).filter(m=>m.kar!==0||m.birikim!==0);
+  set('kar-badge',mos.length+' AY');
+  charts.kar=new Chart($('c-kar').getContext('2d'),{
+    type:'bar',
+    data:{labels:mos.map(m=>m.date),datasets:[
+      {label:'Kâr',data:mos.map(m=>m.kar),backgroundColor:mos.map(m=>m.kar>=0?'rgba(201,165,76,.85)':'rgba(255,77,109,.85)'),borderRadius:6,borderSkipped:false},
+      {label:'Birikim',data:mos.map(m=>m.birikim),backgroundColor:'rgba(79,195,247,.65)',borderRadius:6,borderSkipped:false},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:true,position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,padding:12,color:'#c8c2b4',font:{size:12},usePointStyle:true,pointStyle:'rect'}},tooltip:{backgroundColor:'#191812',borderColor:'#2a2820',borderWidth:1,callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y>=0?'+':''}${fNum(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#8a8478',font:{size:12,family:'JetBrains Mono'}}},y:{grid:{color:'rgba(60,57,48,.7)'},ticks:{color:'#8a8478',font:{size:11},callback:v=>{const a=Math.abs(v);return a>=1e6?(v/1e6).toFixed(1)+'M':a>=1000?(v/1000).toFixed(0)+'K':v;}}}},
+      animation:{duration:1300}}
+  });
+}
+</script>
+</body>
+</html>
