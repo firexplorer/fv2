@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0d0c09;--s1:#161510;--s2:#1d1c17;--s3:#252319;--bdr:#2e2c24;
-  --gold:#c9a54c;--grn:#00e5a0;--red:#ff4d6d;--blu:#4fc3f7;
+  --gold:#c9a54c;--grn:#5cf0c4;--red:#ff4d6d;--blu:#4fc3f7;
   --t1:#ede9e0;--t2:#9a9488;--t3:#5c5850;--r:13px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -56,7 +56,7 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .up{color:var(--grn);}.dn{color:var(--red);}.nu{color:var(--t3);}
 .kpi-0{border-color:rgba(201,165,76,.35);}.kpi-0::before{background:linear-gradient(90deg,transparent,#c9a54c,transparent);opacity:.9;}.kpi-0 .kpi-main{color:#f0d070;}
 .kpi-1{border-color:rgba(79,195,247,.3);}.kpi-1::before{background:linear-gradient(90deg,transparent,#4fc3f7,transparent);opacity:.8;}.kpi-1 .kpi-main{color:#7dd8f5;}
-.kpi-2{border-color:rgba(0,229,160,.25);}.kpi-2::before{background:linear-gradient(90deg,transparent,#00e5a0,transparent);opacity:.8;}.kpi-2 .kpi-main{color:#00e5a0;}
+.kpi-2{border-color:rgba(92,240,196,.25);}.kpi-2::before{background:linear-gradient(90deg,transparent,#5cf0c4,transparent);opacity:.8;}.kpi-2 .kpi-main{color:#5cf0c4;}
 .kpi-3{border-color:rgba(92,240,196,.2);}.kpi-3::before{background:linear-gradient(90deg,transparent,#5cf0c4,transparent);opacity:.65;}.kpi-3 .kpi-main{color:#5cf0c4;}
 .kpi-4{border-color:rgba(255,159,64,.25);}.kpi-4::before{background:linear-gradient(90deg,transparent,#ff9f40,transparent);opacity:.7;}.kpi-4 .kpi-main{color:#ffb870;}
 .kpi-5{border-color:rgba(167,139,250,.22);}.kpi-5::before{background:linear-gradient(90deg,transparent,#a78bfa,transparent);opacity:.65;}.kpi-5 .kpi-main{color:#c4b0ff;}
@@ -66,7 +66,7 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .kpi-sm:hover{transform:translateY(-1px);}
 .kpi-sm-lbl{font-size:11px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-bottom:7px;font-weight:700;font-family:'Outfit';}
 .kpi-sm-main{font-family:'JetBrains Mono';font-size:22px;font-weight:500;line-height:1.1;margin-bottom:6px;}
-.kpi-sm-2{border-color:rgba(0,229,160,.2);}.kpi-sm-2 .kpi-sm-main{color:#00e5a0;}
+.kpi-sm-2{border-color:rgba(92,240,196,.2);}.kpi-sm-2 .kpi-sm-main{color:#5cf0c4;}
 .kpi-sm-3{border-color:rgba(92,240,196,.18);}.kpi-sm-3 .kpi-sm-main{color:#5cf0c4;}
 .kpi-sm-dol{border-color:rgba(79,195,247,.25);}.kpi-sm-dol .kpi-sm-main{color:#7dd8f5;}
 .kpi-sm-dolpct{border-color:rgba(103,232,249,.22);}.kpi-sm-dolpct .kpi-sm-main{color:#67e8f9;}
@@ -118,7 +118,6 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .asset-tbl th.sortable{cursor:pointer;user-select:none;transition:color .18s;}
 .asset-tbl th.sortable:hover{color:var(--gold);}
 .asset-tbl th.sort-active{color:var(--gold);}
-.asset-tbl th.sort-active.sort-loss{color:var(--red);}
 .asset-tbl th.sort-active.sort-day{color:#7dd8f5;}
 .asset-tbl th.sort-active.sort-katki{color:var(--grn);}
 .sort-arrow{font-size:10px;margin-left:4px;opacity:.7;}
@@ -318,13 +317,13 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
           <table class="asset-tbl">
             <thead>
               <tr>
-                <th class="sortable sort-active" id="th-size" onclick="sortAssets('size')">Varlık<span class="sort-arrow" id="arr-size">▼</span></th>
-                <th class="sortable" id="th-tutar" onclick="sortAssets('size')" style="text-align:right">Tutar<span class="sort-arrow" id="arr-tutar"></span></th>
-                <th class="sortable" id="th-profit" onclick="toggleProfit()" style="text-align:right">Getiri<span class="sort-arrow" id="arr-profit"></span></th>
-                <th class="sortable" id="th-pct" onclick="toggleProfit()" style="text-align:right">Getiri %<span class="sort-arrow" id="arr-pct"></span></th>
-                <th class="sortable" id="th-day" onclick="sortAssets('day')" style="text-align:right">G. Getiri<span class="sort-arrow" id="arr-day"></span></th>
-                <th class="sortable" id="th-katki" onclick="sortAssets('katki')" style="text-align:right">Kâra Katkı %<span class="sort-arrow" id="arr-katki"></span></th>
-                <th style="text-align:right">Pay %</th>
+                <th class="sortable sort-active" id="th-size" onclick="toggleCol('size')">Varlık<span class="sort-arrow" id="arr-size">▼</span></th>
+                <th class="sortable" id="th-tutar" onclick="toggleCol('tutar')" style="text-align:right">Tutar<span class="sort-arrow" id="arr-tutar"></span></th>
+                <th class="sortable" id="th-profit" onclick="toggleCol('profit')" style="text-align:right">Getiri<span class="sort-arrow" id="arr-profit"></span></th>
+                <th class="sortable" id="th-pct" onclick="toggleCol('pct')" style="text-align:right">Getiri %<span class="sort-arrow" id="arr-pct"></span></th>
+                <th class="sortable" id="th-day" onclick="toggleCol('day')" style="text-align:right">G. Getiri<span class="sort-arrow" id="arr-day"></span></th>
+                <th class="sortable" id="th-katki" onclick="toggleCol('katki')" style="text-align:right">Kâra Katkı %<span class="sort-arrow" id="arr-katki"></span></th>
+                <th class="sortable" id="th-pay" onclick="toggleCol('pay')" style="text-align:right">Pay %<span class="sort-arrow" id="arr-pay"></span></th>
               </tr>
             </thead>
             <tbody id="asset-tbody"></tbody>
@@ -345,7 +344,7 @@ const MONTHS=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas
 const TICKER_PAL=[
   {bg:'rgba(201,165,76,.14)',border:'rgba(201,165,76,.45)',text:'#f0d070'},
   {bg:'rgba(79,195,247,.12)',border:'rgba(79,195,247,.4)',text:'#7dd8f5'},
-  {bg:'rgba(0,229,160,.12)',border:'rgba(0,229,160,.38)',text:'#00e5a0'},
+  {bg:'rgba(92,240,196,.12)',border:'rgba(92,240,196,.38)',text:'#5cf0c4'},
   {bg:'rgba(255,159,64,.12)',border:'rgba(255,159,64,.38)',text:'#ffb870'},
   {bg:'rgba(167,139,250,.12)',border:'rgba(167,139,250,.38)',text:'#c4b0ff'},
   {bg:'rgba(251,113,133,.12)',border:'rgba(251,113,133,.38)',text:'#fb7185'},
@@ -597,7 +596,7 @@ function renderFire(d){
 }
 
 function renderPie(d){
-  const pal=['#c9a54c','#4fc3f7','#00e5a0','#ff9f40','#ff6384','#9b59b6','#3498db','#e74c3c','#1abc9c','#f39c12'];
+  const pal=['#c9a54c','#4fc3f7','#5cf0c4','#ff9f40','#ff6384','#9b59b6','#3498db','#e74c3c','#1abc9c','#f39c12'];
   const cats=(d.categories||[]).filter(c=>c.val>0);
   const tot=cats.reduce((s,c)=>s+c.val,0)||1;
   if(charts.pie)charts.pie.destroy();
@@ -621,48 +620,43 @@ function renderAssets(d){
   set('asset-count-badge',_assets.length+' VARLIK');
   // Set initial arrow
   const ar=$('arr-size');if(ar)ar.textContent='▼';
-  paintAssets('size');
+  paintAssets();
 }
 
 let _sortMode='size';
+let _sortDesc=true;
 
-function sortAssets(mode){
-  _sortMode=mode;
-  // Clear all header states
-  const headers={size:'th-size',profit:'th-profit',loss:'th-profit',day:'th-day',katki:'th-katki'};
-  const arrows={size:'arr-size',profit:'arr-profit',loss:'arr-profit',day:'arr-day',katki:'arr-katki'};
-  // Reset all sortable headers
-  document.querySelectorAll('.asset-tbl th.sortable').forEach(th=>{
-    th.classList.remove('sort-active','sort-loss','sort-day','sort-katki');
-  });
+const COL_MAP={
+  size:  {th:'th-size',  arr:'arr-size',  desc:(a,b)=>b.val-a.val,                                  asc:(a,b)=>a.val-b.val},
+  tutar: {th:'th-tutar', arr:'arr-tutar', desc:(a,b)=>b.val-a.val,                                  asc:(a,b)=>a.val-b.val},
+  profit:{th:'th-profit',arr:'arr-profit',desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),                  asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0)},
+  pct:   {th:'th-pct',   arr:'arr-pct',   desc:(a,b)=>(b.pct||0)-(a.pct||0),                        asc:(a,b)=>(a.pct||0)-(b.pct||0)},
+  day:   {th:'th-day',   arr:'arr-day',   desc:(a,b)=>(b.gunlukGetiri||0)-(a.gunlukGetiri||0),      asc:(a,b)=>(a.gunlukGetiri||0)-(b.gunlukGetiri||0), cls:'sort-day'},
+  katki: {th:'th-katki', arr:'arr-katki', desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),                  asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0), cls:'sort-katki'},
+  pay:   {th:'th-pay',   arr:'arr-pay',   desc:(a,b)=>b.portfoyPay-a.portfoyPay,                    asc:(a,b)=>a.portfoyPay-b.portfoyPay},
+};
+
+function toggleCol(col){
+  if(_sortMode===col){_sortDesc=!_sortDesc;}
+  else{_sortMode=col;_sortDesc=true;}
+  _applySort();
+}
+
+function _applySort(){
+  const cm=COL_MAP[_sortMode];
+  document.querySelectorAll('.asset-tbl th.sortable').forEach(th=>{th.classList.remove('sort-active','sort-day','sort-katki');});
   document.querySelectorAll('.sort-arrow').forEach(a=>a.textContent='');
-  // Activate clicked header
-  const activeId=headers[mode];
-  const arrowId=arrows[mode];
-  const th=$(activeId);const ar=$(arrowId);
-  if(th){
-    th.classList.add('sort-active');
-    if(mode==='loss'){th.classList.add('sort-loss');}
-    else if(mode==='day'){th.classList.add('sort-day');}
-    else if(mode==='katki'){th.classList.add('sort-katki');}
-  }
-  if(ar){ar.textContent=mode==='loss'?'▲':'▼';}
-  paintAssets(mode);
+  const th=$(cm.th),ar=$(cm.arr);
+  if(th){th.classList.add('sort-active');if(cm.cls)th.classList.add(cm.cls);}
+  if(ar){ar.textContent=_sortDesc?'▼':'▲';}
+  paintAssets();
 }
 
-let _profitDesc=true;
-function toggleProfit(){
-  _profitDesc=!_profitDesc;
-  sortAssets(_profitDesc?'profit':'loss');
-}
+function sortAssets(col){_sortMode=col;_sortDesc=true;_applySort();}
 
-function paintAssets(mode){
-  let list=[..._assets];
-  if(mode==='size')list.sort((a,b)=>b.val-a.val);
-  else if(mode==='profit')list.sort((a,b)=>(b.gainTL||0)-(a.gainTL||0));
-  else if(mode==='loss')list.sort((a,b)=>(a.gainTL||0)-(b.gainTL||0));
-  else if(mode==='day')list.sort((a,b)=>(b.gunlukGetiri||0)-(a.gunlukGetiri||0));
-  else if(mode==='katki')list.sort((a,b)=>(b.gainTL||0)/_totalGainTL-(a.gainTL||0)/_totalGainTL);
+function paintAssets(){
+  const cm=COL_MAP[_sortMode];
+  let list=[..._assets].sort(_sortDesc?cm.desc:cm.asc);
 
   const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'var(--grn)':'var(--red)';
 
@@ -764,8 +758,8 @@ function renderBench(d){
   if(charts.bench)charts.bench.destroy();
   const b=d.benchmarks||[];
   const vals=b.map(x=>parseFloat((x.val*100).toFixed(2)));
-  const CM={'PORTFÖY':'#00e5a0','PORTFOY':'#00e5a0','ALTIN':'#c9a54c','BITCOIN':'#f7931a','BORSA':'#4fc3f7','NDX 100':'#a78bfa','NDX':'#a78bfa','PPN':'#fb7185','DOLAR':'#67e8f9','ENFLASYON':'#fbbf24'};
-  const fb=['#00e5a0','#c9a54c','#4fc3f7','#f7931a','#a78bfa','#fb7185','#67e8f9','#fbbf24'];
+  const CM={'PORTFÖY':'#5cf0c4','PORTFOY':'#5cf0c4','ALTIN':'#c9a54c','BITCOIN':'#f7931a','BORSA':'#4fc3f7','NDX 100':'#a78bfa','NDX':'#a78bfa','PPN':'#fb7185','DOLAR':'#67e8f9','ENFLASYON':'#fbbf24'};
+  const fb=['#5cf0c4','#c9a54c','#4fc3f7','#f7931a','#a78bfa','#fb7185','#67e8f9','#fbbf24'];
   const cols=b.map((x,i)=>CM[x.name.toUpperCase()]||fb[i%fb.length]);
   charts.bench=new Chart($('c-bench').getContext('2d'),{type:'bar',
     data:{labels:b.map(x=>x.name),datasets:[{data:vals,backgroundColor:cols.map(c=>c+'bb'),borderColor:cols,borderWidth:1,borderRadius:4,borderSkipped:false}]},
