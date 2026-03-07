@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>F.I.R.E. Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -13,13 +13,7 @@
   --t1:#ede9e0;--t2:#9a9488;--t3:#5c5850;--r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{
-  background:var(--bg);
-  font-family:'Source Sans 3',sans-serif;
-  color:var(--t1);
-  min-height:100vh;
-  
-}
+body{background:var(--bg);font-family:'Source Sans 3',sans-serif;color:var(--t1);min-height:100vh;}
 #loader{position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
 #loader.hidden{display:none;}
 .spin{width:34px;height:34px;border:3px solid var(--bdr);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
@@ -112,14 +106,13 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .pl-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .pl-val{font-family:'JetBrains Mono';font-size:12px;color:var(--t1);}
 .pl-pct{font-family:'JetBrains Mono';font-size:12px;color:var(--gold);min-width:38px;text-align:right;}
-/* Clickable sortable column headers */
 .asset-tbl th.sortable{cursor:pointer;user-select:none;transition:color .18s;}
 .asset-tbl th.sortable:hover{color:var(--gold);}
 .asset-tbl th.sort-active{color:var(--gold);}
 .asset-tbl th.sort-active.sort-day{color:#7dd8f5;}
 .asset-tbl th.sort-active.sort-katki{color:var(--grn);}
 .sort-arrow{font-size:10px;margin-left:4px;opacity:.7;}
-/* Scrollable body, sticky header */
+.mobile-sub{display:none;margin-top:3px;font-family:'JetBrains Mono';font-size:9px;font-weight:600;line-height:1.2;}
 .asset-table-outer{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .asset-table-wrap{flex:1;overflow-y:auto;max-height:520px;}
 .asset-table-wrap::-webkit-scrollbar{width:4px;}
@@ -127,16 +120,10 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .asset-table-wrap::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px;}
 .asset-tbl{width:100%;border-collapse:collapse;}
 .asset-tbl thead{position:sticky;top:0;z-index:2;background:var(--s1);}
-.asset-tbl th{
-  font-size:12px;letter-spacing:.8px;text-transform:uppercase;
-  color:var(--t1);padding:11px 13px 13px;font-weight:700;
-  border-bottom:2px solid rgba(201,165,76,.25);
-  font-family:'Outfit';text-align:right;white-space:nowrap;
-}
+.asset-tbl th{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--t1);padding:11px 13px 13px;font-weight:700;border-bottom:2px solid rgba(201,165,76,.25);font-family:'Outfit';text-align:right;white-space:nowrap;}
 .asset-tbl th:first-child{text-align:left;}
 .asset-tbl tr.asset-data-row{cursor:pointer;transition:background .15s;}
 .asset-tbl tr.asset-data-row:hover td{background:rgba(201,165,76,.06);}
-
 .asset-tbl td{padding:9px 12px;border-bottom:1px solid rgba(46,44,36,.55);vertical-align:middle;text-align:right;}
 .asset-tbl td:first-child{text-align:left;}
 .asset-tbl tbody tr:last-child td{border-bottom:none;}
@@ -146,16 +133,17 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .asset-name-col .ac{font-size:10px;color:var(--t2);margin-top:2px;font-weight:500;}
 .asset-val-td{font-family:'JetBrains Mono';font-size:12px;color:var(--t1);font-weight:600;letter-spacing:.2px;}
 .asset-num-td{font-family:'JetBrains Mono';font-size:12px;font-weight:600;letter-spacing:.2px;}
-.tbl-wrap{flex:1;display:flex;flex-direction:column;}
+.tbl-wrap{display:flex;flex-direction:column;overflow:hidden;}
 .bay-tbl{width:100%;border-collapse:collapse;}
-.bay-tbl th{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-align:right;padding:0 12px 12px;font-weight:700;border-bottom:1px solid var(--bdr);font-family:'Outfit';}
+.bay-tbl th{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);text-align:right;padding:0 13px 13px;font-weight:700;border-bottom:1px solid var(--bdr);font-family:'Outfit';}
 .bay-tbl th:first-child{text-align:left;}
-.bay-tbl td{font-family:'JetBrains Mono';font-size:12px;padding:12px;border-top:1px solid rgba(46,44,36,.6);text-align:right;color:var(--t2);}
-.bay-tbl td:first-child{text-align:left;color:var(--t1);font-family:'Source Sans 3';font-size:12px;font-weight:500;}
+.bay-tbl td{font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:13px 13px;border-top:1px solid rgba(46,44,36,.6);text-align:right;color:#c8c2b4;}
+.bay-tbl td:first-child{text-align:left;color:var(--t1);font-family:'Source Sans 3';font-size:11px;font-weight:700;}
 .bay-tbl tr:hover td{background:rgba(46,44,36,.35);}
-.bay-tbl tr.active td{background:rgba(201,165,76,.06);}
-.bay-tbl tr.active td:first-child{color:var(--gold);}
-.bay-tbl tr.total td{color:var(--gold);font-weight:700;border-top:1px solid rgba(201,165,76,.2);}
+.bay-tbl tr.active td{background:rgba(201,165,76,.08);color:#f0d070;font-size:12px;}
+.bay-tbl tr.active td:first-child{color:#f0d070;font-size:12px;}
+.bay-tbl tr.total td{background:rgba(79,195,247,.07);color:#7dd8f5;font-size:12px;border-top:1px solid rgba(79,195,247,.25);}
+.bay-tbl tr.total td:first-child{color:#7dd8f5;font-size:12px;}
 #asset-modal{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;}
 #asset-modal.hidden{display:none;}
 .modal-backdrop{position:absolute;inset:0;background:rgba(4,3,2,.82);backdrop-filter:blur(6px);}
@@ -163,7 +151,7 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--bdr);}
 .modal-ticker{font-family:'Bebas Neue';font-size:28px;letter-spacing:3px;background:linear-gradient(135deg,#f0d070,#c9a54c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .modal-cat{font-size:10px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;font-weight:700;margin-top:3px;font-family:'Outfit';}
-.modal-close{background:var(--s3);border:1px solid var(--bdr);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:16px;transition:all .2s;flex-shrink:0;}
+.modal-close{background:var(--s3);border:1px solid var(--bdr);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:16px;transition:all .2s;flex-shrink:0;}
 .modal-close:hover{border-color:rgba(201,165,76,.4);color:var(--gold);}
 .modal-body{padding:20px 24px;}
 .modal-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -173,8 +161,198 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
 .section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--bdr) 15%,var(--bdr) 85%,transparent);margin:24px 0;}
 #err-banner{display:none;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);border-radius:9px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--red);}
 #err-banner.show{display:block;}
-@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}.kpi-grid-6{grid-template-columns:repeat(3,1fr);}.r3,.r3-eq{grid-template-columns:1fr;}}
-@keyframes fadeup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── 1200px ────────────────────────────────────── */
+@media(max-width:1200px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr);}
+  .kpi-grid-6{grid-template-columns:repeat(3,1fr);}
+  .r3,.r3-eq{grid-template-columns:1fr;}
+}
+
+/* ── TABLET 900px ───────────────────────────────── */
+@media(max-width:900px){
+  main{padding:16px 20px 48px;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .kpi-grid-6{grid-template-columns:repeat(2,1fr);}
+  .r3,.r3-eq{grid-template-columns:1fr;}
+  .kpi-main{font-size:19px;}
+  .kpi-sm-main{font-size:19px;}
+  header{padding:13px 20px 11px;}
+  .logo-title{font-size:15px;}
+  .logo-sub{font-size:10px;}
+  .hdr-meta .val{font-size:16px;}
+  .hdr-date{font-size:12px;padding:6px 11px;}
+}
+
+/* ── MOBİL 600px ────────────────────────────────── */
+@media(max-width:600px){
+  :root{--r:13px;}
+
+  /* Header: logo sol, sağ tarafta tarih + yenile butonu */
+  header{
+    padding:10px 13px;
+    flex-wrap:nowrap;
+    gap:8px;
+    align-items:center;
+  }
+  .logo{gap:9px;flex:1;min-width:0;}
+  .logo-badge{font-size:16px;padding:5px 11px;letter-spacing:2px;flex-shrink:0;}
+  .logo-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .logo-sub{font-size:8px;letter-spacing:1.5px;margin-top:1px;}
+  /* FIRE hedefi + ayırıcı gizle – küçük ekrana sığmaz */
+  .hdr-meta{display:none;}
+  .hdr-sep{display:none;}
+  .hdr-right{gap:7px;flex-shrink:0;}
+  .hdr-date{font-size:11px;padding:5px 9px;white-space:nowrap;}
+  .btn-refresh{padding:6px 9px;font-size:12px;gap:4px;}
+  /* "Yenile" yazısını gizle, sadece ikon kalsın */
+  .btn-refresh .btn-lbl{display:none;}
+
+  main{padding:10px 10px 52px;}
+  .sec-lbl{font-size:10px;letter-spacing:1.5px;margin-bottom:8px;margin-top:14px;}
+
+  /* KPI kutucukları: 2 kolon, kompakt */
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:5px;}
+  .kpi-grid-6{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:5px;}
+  .kpi{padding:12px 12px 10px;}
+  .kpi-lbl{font-size:8px;letter-spacing:.4px;margin-bottom:5px;}
+  .kpi-main{font-size:15px;}
+  .kpi-sub{font-size:9px;}
+  .kpi-delta{font-size:8.5px;}
+  .kpi-sm{padding:12px 12px 10px;}
+  .kpi-sm-lbl{font-size:8px;letter-spacing:.4px;margin-bottom:4px;}
+  .kpi-sm-main{font-size:15px;}
+
+  /* Kartlar: tek kolon, kompakt */
+  .row{gap:9px;margin-bottom:5px;}
+  .r3,.r3-eq,.r-full{grid-template-columns:1fr;}
+  .card{padding:14px 12px;border-radius:13px;}
+  .ct{font-size:15px;}
+  .cb{font-size:8.5px;padding:3px 8px;letter-spacing:.8px;}
+  .ch{margin-bottom:11px;}
+
+  .section-divider{margin:12px 0;}
+
+  /* FIRE kartı */
+  .fire-big-pct{font-size:56px;}
+  .fire-pct-label{font-size:8px;}
+  .fire-bar-track{height:13px;}
+  .fire-bar-ends{margin-top:4px;}
+  .fire-bar-start,.fire-bar-end{font-size:8px;}
+  .fr{padding:7px 0;font-size:11px;}
+  .fv{font-size:11px;}
+  .fire-speed-box{padding:9px 12px;margin-top:9px;}
+  .fire-speed-lbl{font-size:8.5px;}
+  .fire-speed-val{font-size:14px;}
+  .fire-eta{padding:10px 12px;margin-top:9px;}
+  .fire-eta-val{font-size:24px;}
+  .fire-eta-sub{font-size:9px;}
+
+  /* Pie grafik ve legend */
+  .chart-fill{min-height:155px;}
+  .chart-fill-tall{min-height:195px;}
+  .pie-leg{margin-top:7px;}
+  .pl-item{padding:5px 0;}
+  .pl-dot{width:6px;height:6px;}
+  .pl-name{font-size:10px;}
+  .pl-val{font-size:10px;}
+  .pl-pct{font-size:10px;min-width:30px;}
+
+  /* Aylık performans tablosu */
+  .bay-tbl th{font-size:8.5px;padding:0 6px 8px;letter-spacing:.6px;}
+  .bay-tbl td{font-size:11.5px;padding:9px 6px;}
+  .bay-tbl tr.active td{font-size:13px;}
+  .bay-tbl tr.active td:first-child{font-size:13px;}
+
+  /* ── VARLIKLAR TABLOSU MOBİL ──────────────────
+     Masaüstü kolonlar: (1)Varlık (2)Tutar (3)Getiri (4)Getiri% (5)G.Getiri (6)Kâra Katkı% (7)Pay%
+     Mobilde göster:    (1)Varlık              (4)Getiri%  (5)G.Getiri              (7)Pay%
+     Gizle: Tutar(2), Getiri TL(3), Kâra Katkı%(6)
+  ─────────────────────────────────────────────── */
+  .asset-table-wrap{max-height:380px;}
+  .asset-tbl th{font-size:8.5px;padding:7px 6px 8px;letter-spacing:.4px;}
+  .asset-tbl td{padding:6px 6px;}
+  .asset-val-td{font-size:10px;}
+  .asset-num-td{font-size:10px;}
+  .asset-badge{font-size:8.5px;padding:3px 5px;border-radius:5px;}
+  .asset-name-col .an{font-size:10.5px;}
+  .asset-name-col .ac{font-size:8px;margin-top:1px;}
+  .asset-ticker-cell{gap:7px;}
+
+  /* Gizle: Getiri TL (3), Kâra Katkı% (6), Pay% (7) */
+  .asset-tbl th:nth-child(3),
+  .asset-tbl td:nth-child(3),
+  .asset-tbl th:nth-child(6),
+  .asset-tbl td:nth-child(6),
+  .asset-tbl th:nth-child(7),
+  .asset-tbl td:nth-child(7){display:none;}
+  /* Mobil alt satır: sadece mobilde görün */
+  .mobile-sub{display:block!important;}
+
+  /* Modal */
+  #asset-modal{padding:10px;}
+  .modal-box{border-radius:13px;max-width:100%;}
+  .modal-header{padding:14px 15px 12px;}
+  .modal-ticker{font-size:21px;}
+  .modal-cat{font-size:9px;}
+  .modal-kpi-row{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .modal-kpi{padding:10px 11px;}
+  .modal-kpi .lbl{font-size:8px;}
+  .modal-kpi .val{font-size:13px;}
+  .modal-close{width:32px;height:32px;}
+  .modal-body{padding:14px 15px;}
+
+  #err-banner{font-size:10px;padding:7px 11px;}
+}
+
+/* ── ÇOK KÜÇÜK 380px ────────────────────────────── */
+@media(max-width:380px){
+  .kpi-main{font-size:13.5px;}
+  .kpi-sm-main{font-size:13.5px;}
+  .logo-title{font-size:12px;}
+  .logo-sub{display:none;}
+  .hdr-date{display:none;}
+  .asset-name-col .an{font-size:10px;}
+}
+
+.bay-extra{margin-top:14px;padding-top:13px;border-top:1px solid rgba(46,44,36,.7);}
+.bay-extra-lbl{font-size:9px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;font-weight:700;font-family:'Outfit';margin-bottom:10px;}
+.bay-records{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+/* Outer shell */
+.bay-record-box{border-radius:16px;padding:0;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+/* Ambient glow layer behind the card */
+.bay-record-box::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;}
+/* Top gradient bar */
+.bay-record-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;z-index:2;border-radius:16px 16px 0 0;}
+/* Section label row */
+.bay-rec-labels{display:flex;border-bottom:1px solid rgba(255,255,255,.05);position:relative;z-index:1;}
+.bay-rec-label{flex:1;padding:9px 16px 8px;display:flex;align-items:center;gap:6px;}
+.bay-rec-label+.bay-rec-label{border-left:1px solid rgba(255,255,255,.05);}
+.bay-rec-label .rec-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.bay-rec-label .rec-lbl{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;font-weight:700;font-family:'Outfit';color:var(--t2);}
+/* Values row */
+.bay-rec-values{display:flex;flex:1;position:relative;z-index:1;}
+.bay-rec-half{flex:1;padding:11px 16px 13px;display:flex;flex-direction:column;gap:3px;}
+.bay-rec-half+.bay-rec-half{border-left:1px solid rgba(255,255,255,.05);}
+.bay-rec-half .rec-val{font-family:'JetBrains Mono';font-size:18px;font-weight:400;line-height:1;letter-spacing:-.5px;}
+.bay-rec-half .rec-date{font-size:10.5px;font-family:'JetBrains Mono';color:#7a7570;letter-spacing:.3px;}
+/* Kâr kutusu */
+.bay-record-box.rec-kar{background:linear-gradient(170deg,#1c1f24 0%,#191c20 100%);border:1px solid rgba(255,255,255,.08);box-shadow:0 6px 32px rgba(0,0,0,.45);}
+.bay-record-box.rec-kar::before{background:linear-gradient(90deg,#5cf0c4 0%,rgba(92,240,196,.3) 48%,rgba(255,107,136,.3) 52%,#ff6b88 100%);}
+.bay-record-box.rec-kar::after{background:radial-gradient(ellipse 60% 50% at 15% 100%,rgba(92,240,196,.07) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 85% 100%,rgba(255,107,136,.07) 0%,transparent 70%);}
+.bay-record-box.rec-kar .bay-rec-label:first-child .rec-dot{background:#5cf0c4;box-shadow:0 0 6px rgba(92,240,196,.8);}
+.bay-record-box.rec-kar .bay-rec-label:last-child .rec-dot{background:#ff6b88;box-shadow:0 0 6px rgba(255,107,136,.8);}
+.bay-record-box.rec-kar .bay-rec-half:first-child .rec-val{color:#5cf0c4;}
+.bay-record-box.rec-kar .bay-rec-half:last-child .rec-val{color:#ff6b88;}
+/* Birikim kutusu */
+.bay-record-box.rec-bir{background:linear-gradient(170deg,#1e1d1a 0%,#1b1a17 100%);border:1px solid rgba(255,255,255,.08);box-shadow:0 6px 32px rgba(0,0,0,.45);}
+.bay-record-box.rec-bir::before{background:linear-gradient(90deg,#c9a54c 0%,rgba(201,165,76,.3) 48%,rgba(79,195,247,.3) 52%,#4fc3f7 100%);}
+.bay-record-box.rec-bir::after{background:radial-gradient(ellipse 60% 50% at 15% 100%,rgba(201,165,76,.08) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 85% 100%,rgba(79,195,247,.07) 0%,transparent 70%);}
+.bay-record-box.rec-bir .bay-rec-label:first-child .rec-dot{background:#c9a54c;box-shadow:0 0 6px rgba(201,165,76,.8);}
+.bay-record-box.rec-bir .bay-rec-label:last-child .rec-dot{background:#4fc3f7;box-shadow:0 0 6px rgba(79,195,247,.8);}
+.bay-record-box.rec-bir .bay-rec-half:first-child .rec-val{color:#f0d070;}
+.bay-record-box.rec-bir .bay-rec-half:last-child .rec-val{color:#7dd8f5;}
+@keyframes fadeup{from{opacity:0;transform:translateY(16px);}@keyframes fadeup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .kpi{animation:fadeup .6s cubic-bezier(.22,.68,0,1.2) both;}
 .kpi:nth-child(1){animation-delay:.05s}.kpi:nth-child(2){animation-delay:.1s}.kpi:nth-child(3){animation-delay:.15s}
 .kpi:nth-child(4){animation-delay:.2s}.kpi:nth-child(5){animation-delay:.25s}.kpi:nth-child(6){animation-delay:.3s}
@@ -222,7 +400,7 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
     <div class="hdr-sep"></div>
     <div class="hdr-date" id="hdr-date">—</div>
     <button class="btn-refresh" onclick="refresh()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Yenile
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="btn-lbl">Yenile</span>
     </button>
   </div>
 </header>
@@ -291,6 +469,10 @@ main{padding:24px 36px 60px;max-width:1680px;margin:0 auto;}
           <thead><tr><th>Ay</th><th>Portföy</th><th>Kâr</th><th>Kâr%</th><th>Birikim</th></tr></thead>
           <tbody id="bay-body"></tbody>
         </table>
+      </div>
+      <div class="bay-extra" id="bay-records-section" style="display:none">
+        <div class="bay-extra-lbl">EN İYİ · EN KÖTÜ AY</div>
+        <div id="bay-records"></div>
       </div>
     </div>
   </div>
@@ -486,9 +668,7 @@ function parseAll([kpiRows,portfoyRows,varlikRows,gerplanRows,benchRows,karRows]
     const col=i+1;
     const kar=parseNum(rKar[col])||0;
     const birikim=parseNum(rBirikim[col])||0;
-    if(kar!==0||birikim!==0){
-      karMonths.push({date:String(karHeader[col]||'').trim()||('Ay '+(i+1)),kar,birikim});
-    }
+    if(kar!==0||birikim!==0){karMonths.push({date:String(karHeader[col]||'').trim()||('Ay '+(i+1)),kar,birikim});}
   }
 
   const months=gercMonths.map((g,i)=>{
@@ -505,13 +685,12 @@ function getDemoData(){return{
   cur:15809250,prev:15864337,base:13460000,totalUSD:358710,prevUSD:361210,
   totalKar:1978765,avgKar:659588,thisKar:-194137,totalKarPct:0.1471,avgKarPct:0.0490,thisKarPct:-0.0122,
   totalBir:372228,avgBir:124076,thisBir:139050,growTotal:0.1747,growThis:-0.0035,
-  dolKar:-2500,dolKarPct:-0.0069,fireSpeed:1850,
-  totalGainTL:1978765,
+  dolKar:-2500,dolKarPct:-0.0069,fireSpeed:1850,totalGainTL:1978765,
   categories:[{name:'PARA PİYASASI',val:8552624},{name:'ALTIN',val:2520717},{name:'YERLİ HİSSE',val:1660652},{name:'DOLAR',val:1659847},{name:'EURO',val:565376},{name:'DEVLET KATKISI',val:832910},{name:'DEĞİŞKEN',val:17124}],
   months:[{date:'Oca/26',total:15570000,kar:1963205,karPct:0.1459,birAy:148668},{date:'Şub/26',total:15864337,kar:209697,karPct:0.0135,birAy:84510},{date:'Mar/26',total:15809250,kar:-194137,karPct:-0.0122,birAy:139050}],
   karMonths:[{date:'Oca/26',kar:1963205,birikim:148668},{date:'Şub/26',kar:209697,birikim:84510},{date:'Mar/26',kar:-194137,birikim:139050}],
   assets:[
-    {ticker:'MIDAS',kat:'Para Piy.',val:3182485,gainTL:0,pct:null,gunlukGetiri:0,portfoyPay:0.201,positions:[{}]},
+    {ticker:'MIDAS',kat:'Para Piy.',val:3182485,gainTL:0,pct:null,gunlukGetiri:0.0002,portfoyPay:0.201,positions:[{}]},
     {ticker:'GEL',kat:'Para Piy.',val:2067411,gainTL:55937,pct:0.0278,gunlukGetiri:0.0004,portfoyPay:0.131,positions:[{}]},
     {ticker:'VGA',kat:'Altın',val:2520717,gainTL:7447,pct:0.003,gunlukGetiri:-0.0028,portfoyPay:0.159,positions:[{}]},
     {ticker:'TI1',kat:'Para Piy.',val:1822749,gainTL:195376,pct:0.1201,gunlukGetiri:0.0008,portfoyPay:0.115,positions:[{}]},
@@ -520,7 +699,7 @@ function getDemoData(){return{
     {ticker:'PHE',kat:'Yerli Hisse',val:672876,gainTL:172877,pct:0.3459,gunlukGetiri:0.0201,portfoyPay:0.043,positions:[{}]},
     {ticker:'VEI',kat:'Devlet Katkısı',val:497197,gainTL:null,pct:null,gunlukGetiri:0.0041,portfoyPay:0.031,positions:[{},{}]},
     {ticker:'VGH',kat:'Değişken',val:17124,gainTL:4705,pct:0.3788,gunlukGetiri:0.0119,portfoyPay:0.001,positions:[{},{}]},
-    {ticker:'RHI',kat:'Yerli Hisse',val:495787,gainTL:-4212,pct:-0.0084,gunlukGetiri:0.0098,portfoyPay:0.031,positions:[{}]},
+    {ticker:'RHI',kat:'Yerli Hisse',val:495787,gainTL:-4212,pct:-0.0084,gunlukGetiri:-0.0098,portfoyPay:0.031,positions:[{}]},
     {ticker:'SG',kat:'Euro',val:565376,gainTL:4426,pct:0.0079,gunlukGetiri:null,portfoyPay:0.036,positions:[{}]},
   ],
   planRows:[{no:1,total:14080000},{no:2,total:14720000},{no:3,total:15380000},{no:4,total:16070000},{no:5,total:16780000},{no:6,total:17520000},{no:7,total:18280000},{no:8,total:19070000},{no:9,total:19880000},{no:10,total:20730000},{no:11,total:21600000},{no:12,total:22500000}],
@@ -531,8 +710,7 @@ function renderDashboard(d){
   const now=new Date();
   set('hdr-date',MONTHS[now.getMonth()].toUpperCase()+' '+now.getFullYear());
   renderKPIs(d);renderFire(d);renderPie(d);
-  renderBuAy(d);renderTrend(d);renderBench(d);renderKarBar(d);
-  renderAssets(d);
+  renderBuAy(d);renderTrend(d);renderBench(d);renderKarBar(d);renderAssets(d);
 }
 
 function renderKPIs(d){
@@ -546,16 +724,13 @@ function renderKPIs(d){
   set('k-bir',fNum(d.totalBir));set('k-bir-sub','Ort. '+fNum(d.avgBir));
   set('k-grow',fPct(d.growTotal));
   set('k-grow-sub','%'+(d.totalUSD/FIRE_TARGET_USD*100).toFixed(2)+' tamamlandı');
-
   const col=(id,v)=>{const e=$(id);if(e)e.style.color=v>=0?'var(--grn)':'var(--red)';};
   set('km-kar',fNum(d.thisKar));col('km-kar',d.thisKar);
   set('km-karpct',fPct(d.thisKarPct));col('km-karpct',d.thisKarPct);
-
   const dkEl=$('km-dol-kar');
   if(dkEl){dkEl.textContent=(d.dolKar!==null&&d.dolKar!==0)?fUSD(d.dolKar):'—';dkEl.style.color=d.dolKar>0?'var(--grn)':d.dolKar<0?'var(--red)':'#7dd8f5';}
   const dkpEl=$('km-dol-kar-pct');
   if(dkpEl){dkpEl.textContent=(d.dolKarPct!==null&&d.dolKarPct!==0)?fPct(d.dolKarPct):'—';dkpEl.style.color=d.dolKarPct>0?'var(--grn)':d.dolKarPct<0?'var(--red)':'#67e8f9';}
-
   set('km-bir',fNum(d.thisBir));
   set('km-grow',fPct(d.growThis));col('km-grow',d.growThis);
 }
@@ -569,14 +744,12 @@ function renderFire(d){
     $('fire-bar-fill').style.width=Math.min(pct,100).toFixed(2)+'%';
     $('fire-bar-glow').style.width=Math.min(pct,100).toFixed(2)+'%';
   },80);
-
   const speedEl=$('fire-speed-val');
   if(speedEl){
     const spd=d.fireSpeed;
-    if(spd!==null&&spd!==0){speedEl.textContent=fUSD(spd)+'/ay';}
+    if(spd!==null&&spd!==0)speedEl.textContent=fUSD(spd)+'/ay';
     else{const fb=d.prevUSD>0?d.totalUSD-d.prevUSD:0;speedEl.textContent=fb!==0?fUSD(fb)+'/ay':'—';}
   }
-
   const monthlyUSD=d.fireSpeed>0?d.fireSpeed:(d.prevUSD>0&&d.totalUSD>d.prevUSD?d.totalUSD-d.prevUSD:d.totalUSD*0.01);
   const rate=monthlyUSD/d.totalUSD;
   if(rate>0){
@@ -586,7 +759,7 @@ function renderFire(d){
     const eta=new Date();eta.setMonth(eta.getMonth()+mo);
     set('fire-eta-val',y>0?`${y} YIL ${m} AY`:`${m} AY`);
     set('fire-eta-sub',`~${eta.getFullYear()} · ${fUSD(Math.max(0,Math.round(FIRE_TARGET_USD-d.totalUSD)))} kaldı`);
-  } else {set('fire-eta-val','—');set('fire-eta-sub','Yeterli veri yok');}
+  }else{set('fire-eta-val','—');set('fire-eta-sub','Yeterli veri yok');}
 }
 
 function renderPie(d){
@@ -609,78 +782,73 @@ function renderPie(d){
 let _assets=[],_totalGainTL=1;
 
 function renderAssets(d){
-  _assets=d.assets||[];
-  _totalGainTL=d.totalGainTL||d.totalKar||1;
+  _assets=d.assets||[];_totalGainTL=d.totalGainTL||d.totalKar||1;
   set('asset-count-badge',_assets.length+' VARLIK');
   const ar=$('arr-size');if(ar)ar.textContent='▼';
   paintAssets();
 }
 
-let _sortMode='size';
-let _sortDesc=true;
+let _sortMode='size',_sortDesc=true;
 
 const COL_MAP={
-  size:  {th:'th-size',  arr:'arr-size',  desc:(a,b)=>b.val-a.val,                                  asc:(a,b)=>a.val-b.val},
-  tutar: {th:'th-tutar', arr:'arr-tutar', desc:(a,b)=>b.val-a.val,                                  asc:(a,b)=>a.val-b.val},
-  profit:{th:'th-profit',arr:'arr-profit',desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),                  asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0)},
-  pct:   {th:'th-pct',   arr:'arr-pct',   desc:(a,b)=>(b.pct||0)-(a.pct||0),                        asc:(a,b)=>(a.pct||0)-(b.pct||0)},
-  day:   {th:'th-day',   arr:'arr-day',   desc:(a,b)=>(b.gunlukGetiri||0)-(a.gunlukGetiri||0),      asc:(a,b)=>(a.gunlukGetiri||0)-(b.gunlukGetiri||0), cls:'sort-day'},
-  katki: {th:'th-katki', arr:'arr-katki', desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),                  asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0), cls:'sort-katki'},
-  pay:   {th:'th-pay',   arr:'arr-pay',   desc:(a,b)=>b.portfoyPay-a.portfoyPay,                    asc:(a,b)=>a.portfoyPay-b.portfoyPay},
+  size:  {th:'th-size',  arr:'arr-size',  desc:(a,b)=>b.val-a.val,                             asc:(a,b)=>a.val-b.val},
+  tutar: {th:'th-tutar', arr:'arr-tutar', desc:(a,b)=>b.val-a.val,                             asc:(a,b)=>a.val-b.val},
+  profit:{th:'th-profit',arr:'arr-profit',desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),             asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0)},
+  pct:   {th:'th-pct',   arr:'arr-pct',   desc:(a,b)=>(b.pct||0)-(a.pct||0),                  asc:(a,b)=>(a.pct||0)-(b.pct||0)},
+  day:   {th:'th-day',   arr:'arr-day',   desc:(a,b)=>(b.gunlukGetiri||0)-(a.gunlukGetiri||0),asc:(a,b)=>(a.gunlukGetiri||0)-(b.gunlukGetiri||0),cls:'sort-day'},
+  katki: {th:'th-katki', arr:'arr-katki', desc:(a,b)=>(b.gainTL||0)-(a.gainTL||0),             asc:(a,b)=>(a.gainTL||0)-(b.gainTL||0),cls:'sort-katki'},
+  pay:   {th:'th-pay',   arr:'arr-pay',   desc:(a,b)=>b.portfoyPay-a.portfoyPay,               asc:(a,b)=>a.portfoyPay-b.portfoyPay},
 };
 
 function toggleCol(col){
-  if(_sortMode===col){_sortDesc=!_sortDesc;}
-  else{_sortMode=col;_sortDesc=true;}
+  if(_sortMode===col)_sortDesc=!_sortDesc;else{_sortMode=col;_sortDesc=true;}
   _applySort();
 }
-
 function _applySort(){
   const cm=COL_MAP[_sortMode];
-  document.querySelectorAll('.asset-tbl th.sortable').forEach(th=>{th.classList.remove('sort-active','sort-day','sort-katki');});
+  document.querySelectorAll('.asset-tbl th.sortable').forEach(th=>th.classList.remove('sort-active','sort-day','sort-katki'));
   document.querySelectorAll('.sort-arrow').forEach(a=>a.textContent='');
   const th=$(cm.th),ar=$(cm.arr);
   if(th){th.classList.add('sort-active');if(cm.cls)th.classList.add(cm.cls);}
-  if(ar){ar.textContent=_sortDesc?'▼':'▲';}
+  if(ar)ar.textContent=_sortDesc?'▼':'▲';
   paintAssets();
 }
 
-function sortAssets(col){_sortMode=col;_sortDesc=true;_applySort();}
-
 function paintAssets(){
   const cm=COL_MAP[_sortMode];
-  let list=[..._assets].sort(_sortDesc?cm.desc:cm.asc);
-
-  // GREEN = #5cf0c4 (matches Toplam Kâr KPI)
+  const list=[..._assets].sort(_sortDesc?cm.desc:cm.asc);
   const cp=v=>v===null||v===undefined?'var(--t3)':v>=0?'#5cf0c4':'var(--red)';
 
   $('asset-tbody').innerHTML=list.map((a,i)=>{
     const tc=TICKER_PAL[i%TICKER_PAL.length];
-    const gainStr=a.gainTL!==null&&a.gainTL!==undefined
+    const gainStr=a.gainTL!==null&&a.gainTL!==undefined&&a.gainTL!==0
       ?`<span class="asset-num-td" style="color:${cp(a.gainTL)}">${a.gainTL>=0?'+':''}${fNum(a.gainTL)}</span>`
       :`<span style="color:var(--t3)">—</span>`;
-    const pctStr=a.pct!==null&&a.pct!==undefined
+    const pctStr=a.pct!==null&&a.pct!==undefined&&a.pct!==0
       ?`<span class="asset-num-td" style="color:${cp(a.pct)}">${fPct(a.pct)}</span>`
       :`<span style="color:var(--t3)">—</span>`;
-    const dayStr=a.gunlukGetiri!==null&&a.gunlukGetiri!==undefined
+    const dayStr=a.gunlukGetiri!==null&&a.gunlukGetiri!==undefined&&a.gunlukGetiri!==0
       ?`<span class="asset-num-td" style="color:${cp(a.gunlukGetiri)}">${fPct(a.gunlukGetiri)}</span>`
       :`<span style="color:var(--t3)">—</span>`;
     const payStr=`<span class="asset-num-td" style="color:var(--t2)">${(a.portfoyPay*100).toFixed(1)}%</span>`;
-
+    // Mobil alt satır değerleri
+    const paySubStr=`<span class="mobile-sub" style="color:var(--t3)">${(a.portfoyPay*100).toFixed(1)}%</span>`;
+    const gainSubStr=a.gainTL!==null&&a.gainTL!==undefined&&a.gainTL!==0
+      ?`<span class="mobile-sub" style="color:${cp(a.gainTL)}">${a.gainTL>=0?'+':''}${fNum(a.gainTL)}</span>`
+      :`<span class="mobile-sub" style="color:var(--t3)">—</span>`;
     let katkiStr=`<span style="color:var(--t3)">—</span>`;
-    if(a.gainTL!==null&&a.gainTL!==undefined&&_totalGainTL!==0){
+    if(a.gainTL!==null&&a.gainTL!==undefined&&a.gainTL!==0&&_totalGainTL!==0){
       const kv=a.gainTL/_totalGainTL*100;
       katkiStr=`<span class="asset-num-td" style="color:${cp(kv)}">${kv>=0?'+':''}${kv.toFixed(1)}%</span>`;
     }
-
     const posCount=a.positions.length;
     const badge=`<div class="asset-badge" style="background:${tc.bg};border:1px solid ${tc.border};color:${tc.text}">${String(a.ticker).slice(0,6)}</div>`;
     const posBadge=posCount>1?`<span style="font-size:10px;background:rgba(79,195,247,.12);border:1px solid rgba(79,195,247,.3);color:#7dd8f5;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono';margin-left:5px;font-weight:700">${posCount}x</span>`:'';
     return `<tr class="asset-data-row" onclick="openModal('${a.ticker.replace(/'/g,"\\'")}')">
       <td><div class="asset-ticker-cell">${badge}<div class="asset-name-col"><div class="an">${a.ticker}${posBadge}</div><div class="ac">${a.kat}</div></div></div></td>
-      <td class="asset-val-td">${fNum(a.val)}</td>
+      <td class="asset-val-td">${a.val?fNum(a.val):'—'}${paySubStr}</td>
       <td>${gainStr}</td>
-      <td>${pctStr}</td>
+      <td>${pctStr}${gainSubStr}</td>
       <td>${dayStr}</td>
       <td>${katkiStr}</td>
       <td>${payStr}</td>
@@ -716,11 +884,40 @@ function renderBuAy(d){
       <td>${fNum(m.total)}</td>
       <td class="${m.kar>=0?'up':'dn'}">${m.kar>=0?'+':''}${fNum(m.kar)}</td>
       <td class="${m.karPct>=0?'up':'dn'}">${fPct(m.karPct)}</td>
-      <td>${fNum(m.birAy)}</td></tr>`;
+      <td>${m.birAy?fNum(m.birAy):'—'}</td></tr>`;
   });
   const tk=mos.reduce((s,m)=>s+m.kar,0),tb=mos.reduce((s,m)=>s+m.birAy,0);
-  rows.push(`<tr class="total"><td>TOPLAM</td><td>—</td><td class="${tk>=0?'up':'dn'}">${tk>=0?'+':''}${fNum(tk)}</td><td class="${tk>=0?'up':'dn'}">${fPct(d.totalKarPct)}</td><td>${fNum(tb)}</td></tr>`);
+  rows.push(`<tr class="total"><td>TOPLAM</td><td>—</td><td class="${tk>=0?'up':'dn'}">${tk>=0?'+':''}${fNum(tk)}</td><td class="${tk>=0?'up':'dn'}">${fPct(d.totalKarPct)}</td><td>${tb?fNum(tb):'—'}</td></tr>`);
   $('bay-body').innerHTML=rows.join('');
+
+  // En iyi / en kötü
+  const recSec=$('bay-records-section');
+  if(mos.length>=2){
+    recSec.style.display='';
+    const withKar=mos.filter(m=>m.kar!==0);
+    const bestKar=withKar.length?[...withKar].sort((a,b)=>b.kar-a.kar)[0]:null;
+    const worstKar=withKar.length?[...withKar].sort((a,b)=>a.kar-b.kar)[0]:null;
+    const withBir=mos.filter(m=>m.birAy>0);
+    const bestBir=withBir.length?[...withBir].sort((a,b)=>b.birAy-a.birAy)[0]:null;
+    const worstBir=withBir.length?[...withBir].sort((a,b)=>a.birAy-b.birAy)[0]:null;
+    const makeBox=(cls,items)=>`<div class="bay-record-box ${cls}">
+      <div class="bay-rec-labels">
+        ${items.map(it=>`<div class="bay-rec-label"><span class="rec-dot"></span><span class="rec-lbl">${it.lbl}</span></div>`).join('')}
+      </div>
+      <div class="bay-rec-values">
+        ${items.map(it=>`<div class="bay-rec-half"><div class="rec-val">${it.val}</div><div class="rec-date">${it.date}</div></div>`).join('')}
+      </div>
+    </div>`;
+    $('bay-records').innerHTML=
+      makeBox('rec-kar',[
+        {lbl:'En İyi Kâr', val:bestKar?(bestKar.kar>=0?'+':'')+fNum(bestKar.kar):'—', date:bestKar?bestKar.date:'—'},
+        {lbl:'En Kötü Kâr', val:worstKar?(worstKar.kar>=0?'+':'')+fNum(worstKar.kar):'—', date:worstKar?worstKar.date:'—'},
+      ])+
+      makeBox('rec-bir',[
+        {lbl:'En Yüksek Birikim', val:bestBir?fNum(bestBir.birAy):'—', date:bestBir?bestBir.date:'—'},
+        {lbl:'En Düşük Birikim', val:worstBir?fNum(worstBir.birAy):'—', date:worstBir?worstBir.date:'—'},
+      ]);
+  } else {recSec.style.display='none';}
 }
 
 function renderTrend(d){
@@ -740,10 +937,7 @@ function renderTrend(d){
     {label:'Plan',data:plnP,borderColor:'#4fc3f7',backgroundColor:gp,pointBackgroundColor:'#4fc3f7',pointRadius:3,pointHoverRadius:5,tension:0.4,fill:true,borderWidth:1.5,borderDash:[5,3]},
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
     plugins:{legend:{display:true,position:'top',align:'end',labels:{boxWidth:12,boxHeight:2,padding:12,color:'#c8c2b4',font:{size:11,family:'JetBrains Mono'}}},tooltip:{backgroundColor:'#191812',borderColor:'#2a2820',borderWidth:1,titleFont:{family:"'Source Sans 3',sans-serif",size:14},bodyFont:{family:"'Source Sans 3',sans-serif",size:14},callbacks:{label:c=>` ${c.dataset.label}: ${fNum(c.parsed.y)}`}}},
-    scales:{
-      x:{grid:{display:false},ticks:{color:'#8a8478',maxRotation:0,font:{size:11}}},
-      y:{grid:{color:'rgba(60,57,48,.7)'},ticks:{color:'#8a8478',callback:v=>(v/1e6).toFixed(1)+'M',font:{size:11}}}
-    },animation:{duration:1500}}
+    scales:{x:{grid:{display:false},ticks:{color:'#8a8478',maxRotation:0,font:{size:11}}},y:{grid:{color:'rgba(60,57,48,.7)'},ticks:{color:'#8a8478',callback:v=>(v/1e6).toFixed(1)+'M',font:{size:11}}}},animation:{duration:1500}}
   });
 }
 
